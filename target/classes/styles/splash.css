@@ -1,0 +1,38 @@
+/* === SPLASH SCREEN STYLES === */
+.splash-container {
+  -fx-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 20, 0, 0, 0);
+}
+
+.splash-logo {
+  -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.3), 10, 0, 0, 0);
+}
+
+.splash-title {
+  -fx-text-fill: white;
+  -fx-font-size: 32px;
+  -fx-font-weight: bold;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 0, 2);
+}
+
+.splash-subtitle {
+  -fx-text-fill: rgba(255, 255, 255, 0.9);
+  -fx-font-size: 16px;
+  -fx-font-weight: normal;
+}
+
+.splash-progress {
+  -fx-progress-color: white;
+  -fx-pref-width: 60;
+  -fx-pref-height: 60;
+}
+
+.splash-progress .percentage {
+  -fx-fill: transparent;
+}
+
+.splash-loading-text {
+  -fx-text-fill: rgba(255, 255, 255, 0.8);
+  -fx-font-size: 14px;
+  -fx-font-style: italic;
+}

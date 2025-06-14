@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox prefHeight="800" prefWidth="1200" stylesheets="@../styles/dashboard.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1">
+<HBox prefHeight="800" prefWidth="1200" stylesheets="@../styles/dashboard.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="com.sv.qlbh.controller.DashboardController">
 
     <!-- SIDEBAR BÊN TRÁI -->
     <VBox maxWidth="250" minWidth="250" prefWidth="250" styleClass="sidebar">
@@ -98,7 +98,7 @@
         </VBox>
         
         <!-- ĐĂNG XUẤT -->
-        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="menu-item logout">
+        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="menu-item logout" onMouseClicked="#handleLogout">
             <ImageView fitHeight="20" fitWidth="20">
                 <image>
                     <Image url="@../images/icon_logout.png" />
@@ -116,7 +116,7 @@
     <VBox styleClass="main-area" HBox.hgrow="ALWAYS">
         <!-- HEADER -->
         <HBox alignment="CENTER_LEFT" prefHeight="70" styleClass="header">
-            <Label styleClass="header-title" text="Chào mừng đến với hệ thống bán hàng" />
+            <Label fx:id="welcomeLabel" styleClass="header-title" text="Chào mừng đến với hệ thống bán hàng" />
             <Pane HBox.hgrow="ALWAYS" />
             <Label styleClass="header-year" text="Năm 2025" />
             <padding>
