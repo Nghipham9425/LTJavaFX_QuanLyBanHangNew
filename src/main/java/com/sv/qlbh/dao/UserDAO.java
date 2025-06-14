@@ -4,6 +4,7 @@
  */
 package com.sv.qlbh.dao;
 import com.sv.qlbh.models.User;
+import java.sql.SQLException;
 /**
  *
  * @author nghip
