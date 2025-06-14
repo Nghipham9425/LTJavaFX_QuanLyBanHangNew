@@ -34,7 +34,7 @@
                         <Label styleClass="login-title" text="Đăng nhập" />
                         <TextField fx:id="txtUsername" prefWidth="220" promptText="Tên đăng nhập" styleClass="login-field" />
                         <PasswordField fx:id="txtPassword" prefWidth="220" promptText="Mật khẩu" styleClass="login-field" />
-                        <Button fx:id="btnLogin" prefWidth="120" styleClass="login-btn" text="Đăng nhập" />
+                        <Button fx:id="btnLogin" onAction="#handleLogin" prefWidth="120" styleClass="login-btn" text="Đăng nhập" />
                         <ProgressIndicator fx:id="progressLogin" maxHeight="40" maxWidth="40" styleClass="login-loading" visible="false" />
                         <Label fx:id="lblMessage" styleClass="error-label" />
                     </children>

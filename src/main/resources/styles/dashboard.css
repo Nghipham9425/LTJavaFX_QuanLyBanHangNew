@@ -109,22 +109,22 @@
   -fx-spacing: 5;
 }
 
-.stat-card.blue {
+.stat-card.stat-blue {
   -fx-border-color: #3b82f6;
   -fx-border-width: 0 0 3 0;
 }
 
-.stat-card.green {
+.stat-card.stat-green {
   -fx-border-color: #10b981;
   -fx-border-width: 0 0 3 0;
 }
 
-.stat-card.orange {
+.stat-card.stat-orange {
   -fx-border-color: #f59e0b;
   -fx-border-width: 0 0 3 0;
 }
 
-.stat-card.purple {
+.stat-card.stat-purple {
   -fx-border-color: #8b5cf6;
   -fx-border-width: 0 0 3 0;
 }
@@ -132,6 +132,12 @@
 .stat-label {
   -fx-text-fill: #6b7280;
   -fx-font-size: 13px;
+}
+
+.stat-value {
+  -fx-text-fill: #1f2937;
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
 }
 
 .stat-number {

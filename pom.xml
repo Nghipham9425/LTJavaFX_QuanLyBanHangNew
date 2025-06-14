@@ -52,7 +52,13 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.4</version>
                 <configuration>
-                    <mainClass>com.sv.qlbh.javafx.App</mainClass>
+                    <mainClass>com.sv.qlbh.Main</mainClass>
+                    <options>
+                        <option>--add-opens</option>
+                        <option>javafx.fxml/javafx.fxml=ALL-UNNAMED</option>
+                        <option>--add-exports</option>
+                        <option>javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</option>
+                    </options>
                 </configuration>
                 <executions>
                     <execution>

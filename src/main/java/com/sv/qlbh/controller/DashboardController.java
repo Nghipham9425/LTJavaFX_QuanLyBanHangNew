@@ -1,93 +1,50 @@
 package com.sv.qlbh.controller;
 
+import com.sv.qlbh.models.User;
+import com.sv.qlbh.utils.SessionManager;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.PieChart;
-import javafx.scene.chart.XYChart;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.ListView;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 
 public class DashboardController implements Initializable {
     
     @FXML
-    private BarChart<String, Number> barChart;
-    
-    @FXML
-    private PieChart pieChart;
-    
-    @FXML
-    private ListView<String> lowStockList;
-    
-    @FXML
-    private ListView<String> recentActivityList;
-    
-    @FXML
-    private Label totalProductsLabel;
-    
-    @FXML
-    private Label totalCustomersLabel;
-    
-    @FXML
-    private Label todayOrdersLabel;
-    
-    @FXML
-    private Label todayRevenueLabel;
+    private Label welcomeLabel;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Khởi tạo dữ liệu cho biểu đồ doanh thu
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.getData().add(new XYChart.Data<>("T1", 1000000));
-        series.getData().add(new XYChart.Data<>("T2", 2000000));
-        series.getData().add(new XYChart.Data<>("T3", 1500000));
-        series.getData().add(new XYChart.Data<>("T4", 3000000));
-        series.getData().add(new XYChart.Data<>("T5", 2500000));
-        series.getData().add(new XYChart.Data<>("T6", 4000000));
-        barChart.getData().add(series);
+        // Hiển thị thông tin user đã đăng nhập
+        User currentUser = SessionManager.getCurrentUser();
+        if (currentUser != null) {
+            String roleName = getRoleName(currentUser.getRole());
+            welcomeLabel.setText("Chào mừng " + roleName + " " + currentUser.getFullName());
+        } else {
+            welcomeLabel.setText("Chào mừng đến với hệ thống bán hàng");
+        }
         
-        // Khởi tạo dữ liệu cho biểu đồ tròn
-        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
-            new PieChart.Data("Sản phẩm A", 30),
-            new PieChart.Data("Sản phẩm B", 25),
-            new PieChart.Data("Sản phẩm C", 20),
-            new PieChart.Data("Sản phẩm D", 15),
-            new PieChart.Data("Sản phẩm E", 10)
-        );
-        pieChart.setData(pieChartData);
-        
-        // Cập nhật số liệu thống kê
-        updateStatistics();
-        
-        // Cập nhật danh sách cảnh báo và hoạt động
-        updateAlerts();
+        System.out.println("Dashboard loaded successfully!");
     }
     
-    private void updateStatistics() {
-        // TODO: Lấy dữ liệu từ database
-        totalProductsLabel.setText("1200");
-        totalCustomersLabel.setText("350");
-        todayOrdersLabel.setText("45");
-        todayRevenueLabel.setText("₫ 12,500,000");
-    }
-    
-    private void updateAlerts() {
-        // TODO: Lấy dữ liệu từ database
-        ObservableList<String> lowStockItems = FXCollections.observableArrayList(
-            "Sản phẩm A - Còn 5 sản phẩm",
-            "Sản phẩm B - Còn 3 sản phẩm"
-        );
-        lowStockList.setItems(lowStockItems);
-        
-        ObservableList<String> recentActivities = FXCollections.observableArrayList(
-            "Đơn hàng mới #1234",
-            "Nhập kho 50 sản phẩm"
-        );
-        recentActivityList.setItems(recentActivities);
+    private String getRoleName(String role) {
+        switch (role) {
+            case "ADMIN":
+                return "Quản trị viên";
+            case "STAFF":
+                return "Nhân viên";
+            case "ACCOUNTANT":
+                return "Kế toán";
+            case "WAREHOUSE":
+                return "Thủ kho";
+            default:
+                return "";
+        }
     }
     
     // Xử lý sự kiện cho các nút
@@ -112,7 +69,33 @@ public class DashboardController implements Initializable {
     }
     
     @FXML
-    private void handleLogout() {
-        // TODO: Xử lý đăng xuất
+    private void handleLogout(javafx.scene.input.MouseEvent event) {
+        try {
+            // Xóa thông tin user đã đăng nhập
+            SessionManager.logout();
+            
+            // Chuyển về màn hình login
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            
+            // Lấy stage hiện tại và thay đổi scene
+            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("Đăng nhập - Quản Lý Bán Hàng");
+            stage.setResizable(false);
+            
+            // Đặt lại kích thước cho màn hình login
+            stage.setWidth(700);
+            stage.setHeight(400);
+            stage.setMinWidth(700);
+            stage.setMinHeight(400);
+            stage.setMaxWidth(700);
+            stage.setMaxHeight(400);
+            stage.centerOnScreen();
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

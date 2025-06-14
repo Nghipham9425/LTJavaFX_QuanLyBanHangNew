@@ -11,7 +11,7 @@ import java.util.List;
 public class UserDAOImpl implements UserDAO {
     private Connection connection;
 
-    public UserDAOImpl() {
+    public UserDAOImpl() throws SQLException {
         this.connection = DatabaseConnection.getConnection();
     }
 
