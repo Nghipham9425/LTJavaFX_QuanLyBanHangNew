@@ -88,7 +88,7 @@ CREATE TABLE vouchers (
     status BOOLEAN DEFAULT TRUE
 );
 
--- Bảng orders
+-- Bảng orders (đã cập nhật cho VNPay)
 CREATE TABLE orders (
     id INT PRIMARY KEY AUTO_INCREMENT,
     customer_id INT,
@@ -96,8 +96,8 @@ CREATE TABLE orders (
     total_amount DECIMAL(15,2) NOT NULL,
     discount_amount DECIMAL(15,2) DEFAULT 0,
     final_amount DECIMAL(15,2) NOT NULL,
-    payment_method ENUM('CASH', 'CARD', 'ATM') NOT NULL,
-    status ENUM('PENDING', 'COMPLETED', 'CANCELLED') DEFAULT 'PENDING',
+    payment_method ENUM('CASH', 'VNPAY') NOT NULL, -- Updated: Chỉ giữ CASH và VNPAY
+    status ENUM('PROCESSING', 'COMPLETED', 'FAILED', 'CANCELLED') DEFAULT 'PROCESSING', -- Updated: Thêm PROCESSING, FAILED cho VNPay
     note TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id),
@@ -166,6 +166,11 @@ CREATE TABLE report_details (
     FOREIGN KEY (category_id) REFERENCES categories(id),
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
+
+-- Tạo index cho performance (VNPay optimization)
+CREATE INDEX idx_orders_payment_method ON orders(payment_method);
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_orders_created_at ON orders(created_at);
 
 -- Tạo tài khoản mặc định
 INSERT INTO users (username, password, full_name, role) VALUES 
@@ -247,7 +252,9 @@ INSERT INTO customers (name, phone, email, group_id) VALUES
 ('Chị Mai', '0777777777', 'mai@email.com', 1),
 ('Anh Dũng', '0666666666', 'dung@email.com', 2),
 ('Chị Thảo', '0555555555', 'thao@email.com', 3),
-('Anh Phúc', '0444444444', 'phuc@email.com', 4);
+('Anh Phúc', '0444444444', 'phuc@email.com', 4),
+('Anh Minh - 0987654321', '0987654321', NULL, 1), -- Updated: Thêm format tương tự trong app
+('Chị Linh - 0666666666', '0666666666', NULL, 2);
 
 -- Thêm khuyến mãi
 INSERT INTO promotions (name, discount_type, discount_value, start_date, end_date) VALUES 
@@ -257,4 +264,9 @@ INSERT INTO promotions (name, discount_type, discount_value, start_date, end_dat
 -- Thêm mã giảm giá
 INSERT INTO vouchers (code, discount_type, discount_value, min_order_value, start_date, end_date) VALUES
 ('SUMMER2025', 'PERCENT', 15, 200000, '2025-05-01 00:00:00', '2025-05-31 23:59:59'),
-('WELCOME50K', 'AMOUNT', 50000, 100000, '2025-05-01 00:00:00', '2025-12-31 23:59:59'); 
+('WELCOME50K', 'AMOUNT', 50000, 100000, '2025-05-01 00:00:00', '2025-12-31 23:59:59');
+
+-- Sample orders for testing (Optional)
+INSERT INTO orders (customer_id, user_id, total_amount, discount_amount, final_amount, payment_method, status, note) VALUES
+(1, 1, 100000, 0, 100000, 'CASH', 'COMPLETED', 'Test order 1'),
+(2, 1, 200000, 20000, 180000, 'VNPAY', 'PROCESSING', 'Test VNPay order'); 

@@ -13,7 +13,8 @@ public class SupplierDAOImpl implements SupplierDAO {
     
     @Override
     public boolean add(Supplier supplier) throws SQLException {
-        String sql = "INSERT INTO suppliers (name, phone, email, address, contact_person, status) VALUES (?, ?, ?, ?, ?, ?)";
+        // FIX: Bỏ contact_person để match với database schema
+        String sql = "INSERT INTO suppliers (name, phone, email, address, status) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
@@ -21,8 +22,8 @@ public class SupplierDAOImpl implements SupplierDAO {
             stmt.setString(2, supplier.getPhone());
             stmt.setString(3, supplier.getEmail());
             stmt.setString(4, supplier.getAddress());
-            stmt.setString(5, supplier.getContactPerson());
-            stmt.setBoolean(6, supplier.isStatus());
+            // FIX: Bỏ contact_person parameter
+            stmt.setBoolean(5, supplier.isStatus()); // Đổi từ index 6 thành 5
             
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -47,7 +48,8 @@ public class SupplierDAOImpl implements SupplierDAO {
     
     @Override
     public boolean update(Supplier supplier) throws SQLException {
-        String sql = "UPDATE suppliers SET name=?, phone=?, email=?, address=?, contact_person=?, status=? WHERE id=?";
+        // FIX: Bỏ contact_person khỏi UPDATE
+        String sql = "UPDATE suppliers SET name=?, phone=?, email=?, address=?, status=? WHERE id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
@@ -55,9 +57,9 @@ public class SupplierDAOImpl implements SupplierDAO {
             stmt.setString(2, supplier.getPhone());
             stmt.setString(3, supplier.getEmail());
             stmt.setString(4, supplier.getAddress());
-            stmt.setString(5, supplier.getContactPerson());
-            stmt.setBoolean(6, supplier.isStatus());
-            stmt.setInt(7, supplier.getId());
+            // FIX: Bỏ contact_person parameter
+            stmt.setBoolean(5, supplier.isStatus()); // Đổi từ index 6 thành 5
+            stmt.setInt(6, supplier.getId()); // Đổi từ index 7 thành 6
             
             return stmt.executeUpdate() > 0;
         }
@@ -131,7 +133,6 @@ public class SupplierDAOImpl implements SupplierDAO {
         supplier.setPhone(rs.getString("phone"));
         supplier.setEmail(rs.getString("email"));
         supplier.setAddress(rs.getString("address"));
-        supplier.setContactPerson(rs.getString("contact_person"));
         supplier.setStatus(rs.getBoolean("status"));
         return supplier;
     }
