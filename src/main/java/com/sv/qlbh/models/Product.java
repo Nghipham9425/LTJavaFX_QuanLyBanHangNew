@@ -10,6 +10,7 @@ package com.sv.qlbh.models;
  */
 public class Product {
     private int id;
+    private String name;
     private int categoryId;
     private int supplierId;
     private String barcode;
@@ -21,8 +22,9 @@ public class Product {
     public Product() {
     }
 
-    public Product(int id, int categoryId, int supplierId, String barcode, double price, double costPrice, int stock, boolean status) {
+    public Product(int id, String name, int categoryId, int supplierId, String barcode, double price, double costPrice, int stock, boolean status) {
         this.id = id;
+        this.name = name;
         this.categoryId = categoryId;
         this.supplierId = supplierId;
         this.barcode = barcode;
@@ -38,6 +40,14 @@ public class Product {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getCategoryId() {
@@ -96,4 +106,21 @@ public class Product {
         this.status = status;
     }
     
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Product product = (Product) obj;
+        return id == product.id;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+    
+    @Override
+    public String toString() {
+        return name; // Để hiển thị tên sản phẩm thay vì object reference
+    }
 }

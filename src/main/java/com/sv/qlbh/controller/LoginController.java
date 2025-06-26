@@ -7,7 +7,9 @@ package com.sv.qlbh.controller;
 import com.sv.qlbh.dao.UserDAO;
 import com.sv.qlbh.dao.UserDAOImpl;
 import com.sv.qlbh.models.User;
+import com.sv.qlbh.utils.SessionManager;
 import java.io.IOException;
+import java.sql.SQLException;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -76,7 +78,18 @@ public class LoginController {
                               Parent root = loader.load();
                               Scene scene = new Scene(root);
                               Stage stage = (Stage) btnLogin.getScene().getWindow();
+                              
+                              // Đặt lại kích thước cho Dashboard
                               stage.setScene(scene);
+                              stage.setTitle("Quản Lý Bán Hàng");
+                              stage.setResizable(true);
+                              stage.setMinWidth(1000);
+                              stage.setMinHeight(700);
+                              stage.setMaxWidth(Double.MAX_VALUE);
+                              stage.setMaxHeight(Double.MAX_VALUE);
+                              stage.setWidth(1200);
+                              stage.setHeight(800);
+                              stage.centerOnScreen();
                               stage.show();
                           } catch (IOException e) {
                               e.printStackTrace();
@@ -87,10 +100,17 @@ public class LoginController {
                       }
                   });
               } catch (SQLException e) {
+                  System.err.println("SQLException trong login: " + e.getMessage());
                   Platform.runLater(() -> {
                       progressLogin.setVisible(false);
                       btnLogin.setDisable(false);
-                      lblMessage.setText("Lỗi kết nối database: " + e.getMessage());
+                      if (e.getErrorCode() == 1045) {
+                          lblMessage.setText("Lỗi xác thực database!");
+                      } else if (e.getErrorCode() == 2003) {
+                          lblMessage.setText("Không thể kết nối đến database server!");
+                      } else {
+                          lblMessage.setText("Lỗi cơ sở dữ liệu: " + e.getMessage());
+                      }
                   });
               }
           }).start();

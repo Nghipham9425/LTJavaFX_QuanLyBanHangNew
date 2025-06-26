@@ -32,14 +32,21 @@
   -fx-alignment: CENTER_LEFT;
 }
 
+.menu-item:hover {
+  -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
 .menu-item Label {
   -fx-text-fill: white;
   -fx-font-size: 14px;
 }
 
-/* Đặc biệt cho Trang chủ và Đăng xuất */
-.menu-item.active Label,
-.menu-item.logout Label {
+/* Active menu item */
+.menu-item.active {
+  -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
+.menu-item.active Label {
   -fx-text-fill: white;
   -fx-font-weight: bold;
 }
@@ -109,22 +116,22 @@
   -fx-spacing: 5;
 }
 
-.stat-card.blue {
+.stat-card.stat-blue {
   -fx-border-color: #3b82f6;
   -fx-border-width: 0 0 3 0;
 }
 
-.stat-card.green {
+.stat-card.stat-green {
   -fx-border-color: #10b981;
   -fx-border-width: 0 0 3 0;
 }
 
-.stat-card.orange {
+.stat-card.stat-orange {
   -fx-border-color: #f59e0b;
   -fx-border-width: 0 0 3 0;
 }
 
-.stat-card.purple {
+.stat-card.stat-purple {
   -fx-border-color: #8b5cf6;
   -fx-border-width: 0 0 3 0;
 }
@@ -132,6 +139,12 @@
 .stat-label {
   -fx-text-fill: #6b7280;
   -fx-font-size: 13px;
+}
+
+.stat-value {
+  -fx-text-fill: #1f2937;
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
 }
 
 .stat-number {
@@ -221,4 +234,24 @@
 .quick-tool-btn:pressed {
   -fx-background-color: #e5e7eb;
   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 2);
+}
+
+/* === BLOCK CARDS === */
+.block-card {
+  -fx-background-color: white;
+  -fx-background-radius: 12;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 6, 0, 0, 2);
+  -fx-padding: 20;
+  -fx-spacing: 12;
+}
+
+.block-title {
+  -fx-text-fill: #1f2937;
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+}
+
+.block-text {
+  -fx-text-fill: #6b7280;
+  -fx-font-size: 14px;
 }

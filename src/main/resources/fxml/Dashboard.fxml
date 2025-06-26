@@ -10,12 +10,12 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox prefHeight="800" prefWidth="1200" stylesheets="@../styles/dashboard.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1">
+<HBox prefHeight="800" prefWidth="1200" stylesheets="@../styles/dashboard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sv.qlbh.controller.DashboardController">
 
     <!-- SIDEBAR BÊN TRÁI -->
     <VBox maxWidth="250" minWidth="250" prefWidth="250" styleClass="sidebar">
         <!-- LOGO -->
-        <HBox alignment="CENTER" spacing="10" styleClass="logo-section">
+        <HBox alignment="CENTER" prefWidth="406.0" spacing="10" styleClass="logo-section">
             <ImageView fitHeight="40" fitWidth="40">
                 <image>
                     <Image url="@../images/logo_ic.png" />
@@ -25,9 +25,9 @@
         </HBox>
         
         <!-- MENU -->
-        <VBox spacing="5" styleClass="menu-section" VBox.vgrow="ALWAYS">
+        <VBox prefHeight="640.0" prefWidth="0.0" spacing="5" styleClass="menu-section" VBox.vgrow="ALWAYS">
             <!-- Trang chủ -->
-            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="menu-item active">
+            <HBox alignment="CENTER_LEFT" onMouseClicked="#handleHomeManagement" spacing="10" styleClass="menu-item active">
                 <ImageView fitHeight="20" fitWidth="20">
                     <image>
                         <Image url="@../images/icon_dashboard.png" />
@@ -37,7 +37,7 @@
             </HBox>
             
             <!-- Sản phẩm -->
-            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
+            <HBox alignment="CENTER_LEFT" onMouseClicked="#handleProductManagement" spacing="10" styleClass="menu-item">
                 <ImageView fitHeight="20" fitWidth="20">
                     <image>
                         <Image url="@../images/icon_product.png" />
@@ -47,7 +47,7 @@
             </HBox>
             
             <!-- Khách hàng -->
-            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
+            <HBox alignment="CENTER_LEFT" onMouseClicked="#handleCustomerManagement" spacing="10" styleClass="menu-item">
                 <ImageView fitHeight="20" fitWidth="20">
                     <image>
                         <Image url="@../images/icon_customer.png" />
@@ -56,8 +56,28 @@
                 <Label text="Quản lý khách hàng" />
             </HBox>
             
+            <!-- Nhà cung cấp -->
+            <HBox alignment="CENTER_LEFT" onMouseClicked="#handleSupplierManagement" spacing="10" styleClass="menu-item">
+                <ImageView fitHeight="20" fitWidth="20">
+                    <image>
+                        <Image url="@../images/icon_customer.png" />
+                    </image>
+                </ImageView>
+                <Label text="Nhà cung cấp" />
+            </HBox>
+            
+            <!-- Đơn hàng -->
+            <HBox alignment="CENTER_LEFT" onMouseClicked="#handleOrderManagement" spacing="10" styleClass="menu-item">
+                <ImageView fitHeight="20" fitWidth="20">
+                    <image>
+                        <Image url="@../images/icon_report.png" />
+                    </image>
+                </ImageView>
+                <Label text="Quản lý đơn hàng" />
+            </HBox>
+            
             <!-- Kho -->
-            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
+            <HBox alignment="CENTER_LEFT" onMouseClicked="#handleInventoryManagement" spacing="10" styleClass="menu-item">
                 <ImageView fitHeight="20" fitWidth="20">
                     <image>
                         <Image url="@../images/icon_inventory.png" />
@@ -67,7 +87,7 @@
             </HBox>
             
             <!-- Bán hàng -->
-            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
+            <HBox alignment="CENTER_LEFT" onMouseClicked="#handleSalesManagement" spacing="10" styleClass="menu-item">
                 <ImageView fitHeight="20" fitWidth="20">
                     <image>
                         <Image url="@../images/icon_sale.png" />
@@ -77,7 +97,7 @@
             </HBox>
             
             <!-- Báo cáo -->
-            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
+            <HBox alignment="CENTER_LEFT" onMouseClicked="#handleReportManagement" spacing="10" styleClass="menu-item">
                 <ImageView fitHeight="20" fitWidth="20">
                     <image>
                         <Image url="@../images/icon_report.png" />
@@ -87,7 +107,7 @@
             </HBox>
             
             <!-- Cài đặt -->
-            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="menu-item">
+            <HBox alignment="CENTER_LEFT" onMouseClicked="#handleSettingsManagement" spacing="10" styleClass="menu-item">
                 <ImageView fitHeight="20" fitWidth="20">
                     <image>
                         <Image url="@../images/icon_setting.png" />
@@ -98,7 +118,7 @@
         </VBox>
         
         <!-- ĐĂNG XUẤT -->
-        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="menu-item logout">
+        <HBox alignment="CENTER_LEFT" onMouseClicked="#handleLogout" spacing="10" styleClass="menu-item logout">
             <ImageView fitHeight="20" fitWidth="20">
                 <image>
                     <Image url="@../images/icon_logout.png" />
@@ -116,7 +136,7 @@
     <VBox styleClass="main-area" HBox.hgrow="ALWAYS">
         <!-- HEADER -->
         <HBox alignment="CENTER_LEFT" prefHeight="70" styleClass="header">
-            <Label styleClass="header-title" text="Chào mừng đến với hệ thống bán hàng" />
+            <Label fx:id="welcomeLabel" styleClass="header-title" text="Chào mừng đến với hệ thống bán hàng" />
             <Pane HBox.hgrow="ALWAYS" />
             <Label styleClass="header-year" text="Năm 2025" />
             <padding>
@@ -126,7 +146,7 @@
         
         <!-- MAIN CONTENT -->
         <ScrollPane fitToWidth="true" styleClass="content-scroll" VBox.vgrow="ALWAYS">
-            <VBox spacing="20" styleClass="content-area">
+            <VBox fx:id="contentArea" spacing="20" styleClass="content-area">
                                  <!-- THỐNG KÊ NHANH - 4 Ô -->
                  <HBox alignment="CENTER" spacing="18">
                      <VBox alignment="CENTER" prefHeight="120" prefWidth="180" styleClass="stat-card stat-blue">
@@ -138,12 +158,12 @@
                          <Label styleClass="stat-value" text="350" />
                      </VBox>
                      <VBox alignment="CENTER" prefHeight="120" prefWidth="180" styleClass="stat-card stat-orange">
-                         <Label styleClass="stat-label" text="Đơn hôm nay" />
-                         <Label styleClass="stat-value" text="45" />
+                         <Label styleClass="stat-label" text="Nhà cung cấp" />
+                         <Label styleClass="stat-value" text="25" />
                      </VBox>
                      <VBox alignment="CENTER" prefHeight="120" prefWidth="180" styleClass="stat-card stat-purple">
-                         <Label styleClass="stat-label" text="Doanh thu hôm nay" />
-                         <Label styleClass="stat-value" text="₫ 12,500,000" />
+                         <Label styleClass="stat-label" text="Tổng đơn hàng" />
+                         <Label styleClass="stat-value" text="1,250" />
                      </VBox>
                  </HBox>
                  

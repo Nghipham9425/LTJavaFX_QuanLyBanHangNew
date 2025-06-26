@@ -46,4 +46,21 @@ public class Category {
         this.description = description;
     }
     
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Category category = (Category) obj;
+        return id == category.id;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+    
+    @Override
+    public String toString() {
+        return name; // Để ComboBox hiển thị tên thay vì object reference
+    }
 }

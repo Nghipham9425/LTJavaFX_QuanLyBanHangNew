@@ -14,17 +14,19 @@ public class Supplier {
     private String phone;
     private String email;
     private String address;
+    private String contactPerson;
     private boolean status;
 
     public Supplier() {
     }
 
-    public Supplier(int id, String name, String phone, String email, String address, boolean status) {
+    public Supplier(int id, String name, String phone, String email, String address, String contactPerson, boolean status) {
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
+        this.contactPerson = contactPerson;
         this.status = status;
     }
 
@@ -68,6 +70,14 @@ public class Supplier {
         this.address = address;
     }
 
+    public String getContactPerson() {
+        return contactPerson;
+    }
+
+    public void setContactPerson(String contactPerson) {
+        this.contactPerson = contactPerson;
+    }
+
     public boolean isStatus() {
         return status;
     }
@@ -76,4 +86,21 @@ public class Supplier {
         this.status = status;
     }
     
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Supplier supplier = (Supplier) obj;
+        return id == supplier.id;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+    
+    @Override
+    public String toString() {
+        return name; // Để hiển thị tên supplier thay vì object reference
+    }
 }
