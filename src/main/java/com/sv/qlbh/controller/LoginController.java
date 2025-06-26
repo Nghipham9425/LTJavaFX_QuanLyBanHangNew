@@ -100,10 +100,17 @@ public class LoginController {
                       }
                   });
               } catch (SQLException e) {
+                  System.err.println("SQLException trong login: " + e.getMessage());
                   Platform.runLater(() -> {
                       progressLogin.setVisible(false);
                       btnLogin.setDisable(false);
-                      lblMessage.setText("Lỗi kết nối database: " + e.getMessage());
+                      if (e.getErrorCode() == 1045) {
+                          lblMessage.setText("Lỗi xác thực database!");
+                      } else if (e.getErrorCode() == 2003) {
+                          lblMessage.setText("Không thể kết nối đến database server!");
+                      } else {
+                          lblMessage.setText("Lỗi cơ sở dữ liệu: " + e.getMessage());
+                      }
                   });
               }
           }).start();

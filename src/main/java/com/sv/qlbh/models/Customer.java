@@ -96,4 +96,20 @@ public class Customer {
         this.status = status;
     }
     
+    public CustomerGroup getCustomerGroup() {
+        return CustomerGroup.getGroupBySpent(this.totalSpent);
+    }
+    
+    public String getGroupDisplayName() {
+        return getCustomerGroup().getDisplayNameWithIcon();
+    }
+    
+    public double getAmountToNextLevel() {
+        return getCustomerGroup().getAmountToNextLevel(this.totalSpent);
+    }
+    
+    public boolean canLevelUp() {
+        return getCustomerGroup().getNextLevel() != null;
+    }
+    
 }

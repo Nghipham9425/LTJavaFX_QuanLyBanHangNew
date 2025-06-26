@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * @author nghip
  */
 public class DatabaseConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/qlbh";
+    private static final String URL = "jdbc:mysql://localhost:3306/qlbh?useUnicode=true&characterEncoding=UTF-8";
     private static final String USER="root";
     private static final String PASSWORD="";
     

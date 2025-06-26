@@ -24,8 +24,25 @@ public class UserDAOImpl implements UserDAO {
             ps.setString(3, user.getFullName());
             ps.setString(4, user.getRole());
             ps.setBoolean(5, user.isStatus());
-            int row = ps.executeUpdate();
-            return row > 0;
+            
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Thêm người dùng thành công: " + user.getUsername());
+                return true;
+            } else {
+                System.out.println("Không có dòng nào bị ảnh hưởng khi thêm người dùng: " + user.getUsername());
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi thêm người dùng '" + user.getUsername() + "': " + e.getMessage());
+            System.err.println("SQL State: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
+            
+            if (e.getErrorCode() == 1062) {
+                System.err.println("Tên đăng nhập đã tồn tại trong hệ thống");
+            }
+            
+            throw e;
         }
     }
 
@@ -130,9 +147,17 @@ public class UserDAOImpl implements UserDAO {
                     u.setFullName(rs.getString("full_name"));
                     u.setRole(rs.getString("role"));
                     u.setStatus(rs.getBoolean("status"));
+                    System.out.println("Đăng nhập thành công: " + u.getFullName());
                     return u;
+                } else {
+                    System.out.println("Đăng nhập thất bại: Sai username/password hoặc tài khoản bị khóa");
                 }
             }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi đăng nhập với username '" + username + "': " + e.getMessage());
+            System.err.println("SQL State: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
+            throw e;
         }
         return null;
     }
