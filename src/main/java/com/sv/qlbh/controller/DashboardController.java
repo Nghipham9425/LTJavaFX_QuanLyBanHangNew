@@ -5,6 +5,7 @@ import com.sv.qlbh.utils.SessionManager;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.HostServices;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -22,6 +23,8 @@ public class DashboardController implements Initializable {
     
     @FXML
     private VBox contentArea;
+    
+    private HostServices hostServices;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -149,10 +152,22 @@ public class DashboardController implements Initializable {
     
 
     
+    public void setHostServices(HostServices hostServices) {
+        this.hostServices = hostServices;
+    }
+    
     private void loadContent(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Node content = loader.load();
+            
+                         // If loading POS, inject HostServices
+             if (fxmlPath.equals("/fxml/POS.fxml")) {
+                 com.sv.qlbh.controller.POSController posController = loader.getController();
+                 if (posController != null && hostServices != null) {
+                     posController.setHostServices(hostServices);
+                 }
+             }
             
             contentArea.getChildren().clear();
             contentArea.getChildren().add(content);
@@ -181,7 +196,9 @@ public class DashboardController implements Initializable {
     // Xử lý sự kiện cho các nút
     @FXML
     private void handleCreateOrder() {
-        // TODO: Xử lý tạo đơn hàng mới
+        // Chuyển đến màn hình bán hàng
+        welcomeLabel.setText("💰 Bán Hàng - POS");
+        loadContent("/fxml/Sales.fxml");
     }
     
     @FXML
@@ -253,9 +270,8 @@ public class DashboardController implements Initializable {
     
     @FXML
     private void handleSalesManagement(javafx.scene.input.MouseEvent event) {
-        welcomeLabel.setText("Bán hàng");
-        // TODO: Tạo Sales.fxml
-        System.out.println("Sales Management clicked");
+        welcomeLabel.setText("💰 Bán Hàng - POS");
+        loadContent("/fxml/POS.fxml");
         updateActiveMenuItem(event);
     }
     

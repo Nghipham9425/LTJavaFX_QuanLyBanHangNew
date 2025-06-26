@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="20" stylesheets="@../styles/pos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sv.qlbh.controller.POSController">
+    
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="20" styleClass="header-section">
+        <Label styleClass="page-title" text="POS - Bán Hàng" />
+        <Pane HBox.hgrow="ALWAYS" />
+        <Label fx:id="lblCurrentUser" styleClass="user-info" text="Nhân viên: Admin" />
+        <Label fx:id="lblCurrentTime" styleClass="time-info" text="15:30 - 25/12/2024" />
+    </HBox>
+       <!-- MAIN CONTENT -->
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+        
+        <!-- LEFT PANEL - Products -->
+        <VBox spacing="15" styleClass="section-card" HBox.hgrow="ALWAYS">
+            <Label styleClass="section-title" text="Danh Sách Sản Phẩm" />
+            
+            <!-- Search Bar -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="txtProductSearch" promptText="Tìm kiếm sản phẩm..." styleClass="search-field" prefWidth="250" />
+                <Button onAction="#handleSearch" styleClass="btn-primary" text="Tìm kiếm" />
+                <Button onAction="#handleRefresh" styleClass="btn-secondary" text="Làm mới" />
+            </HBox>
+            
+            <!-- Products Table -->
+            <TableView fx:id="tblProducts" styleClass="data-table" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colProductName" prefWidth="200" text="Tên Sản Phẩm" />
+                    <TableColumn fx:id="colProductPrice" prefWidth="100" text="Giá" />
+                    <TableColumn fx:id="colProductStock" prefWidth="80" text="Tồn Kho" />
+                </columns>
+            </TableView>
+            
+            <Label styleClass="help-text" text="💡 Double-click vào sản phẩm để thêm vào giỏ hàng" />
+        </VBox>
+        
+        <!-- RIGHT PANEL - Cart & Payment -->
+        <VBox spacing="15" styleClass="form-section" minWidth="450" maxWidth="450">
+            
+            <!-- Cart Section -->
+            <VBox spacing="10" styleClass="cart-section">
+                <Label styleClass="section-title" text="Giỏ Hàng" />
+                
+                <TableView fx:id="tblCart" editable="true" styleClass="cart-table" prefHeight="200">
+                    <columns>
+                        <TableColumn fx:id="colCartProduct" prefWidth="150" text="Sản Phẩm" />
+                        <TableColumn fx:id="colCartQuantity" prefWidth="60" text="SL" />
+                        <TableColumn fx:id="colCartPrice" prefWidth="80" text="Giá" />
+                        <TableColumn fx:id="colCartTotal" prefWidth="90" text="Thành Tiền" />
+                    </columns>
+                </TableView>
+                
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button fx:id="btnRemoveItem" onAction="#removeFromCart" styleClass="btn-danger" text="Xóa Item" />
+                    <Button fx:id="btnClearCart" onAction="#clearCart" styleClass="btn-secondary" text="Xóa Tất Cả" />
+                </HBox>
+            </VBox>
+            
+            <!-- Customer Selection -->
+            <VBox spacing="10" styleClass="customer-section">
+                <Label styleClass="form-label" text="Thông Tin Khách Hàng" />
+                <ComboBox fx:id="cmbCustomer" promptText="Chọn khách hàng..." styleClass="form-field" />
+                <Button onAction="#handleAddNewCustomer" styleClass="btn-info" text="+ Thêm Khách Hàng Mới" />
+            </VBox>
+            
+            <!-- Totals Section -->
+            <VBox spacing="10" styleClass="totals-section">
+                <Label styleClass="form-label" text="Tổng Cộng" />
+                
+                <GridPane hgap="10" vgap="5" styleClass="totals-grid">
+                    <columnConstraints>
+                        <ColumnConstraints prefWidth="120" />
+                        <ColumnConstraints />
+                    </columnConstraints>
+                    
+                    <Label text="Tạm tính:" styleClass="total-label" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <Label fx:id="lblSubtotal" text="0 VND" styleClass="total-value" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    
+                    <Label text="Giảm giá:" styleClass="total-label" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <Label fx:id="lblDiscount" text="0 VND" styleClass="total-value" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    
+                    <Separator GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+                    
+                    <Label text="Tổng cộng:" styleClass="total-label final" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                    <Label fx:id="lblTotal" text="0 VND" styleClass="total-value final" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                </GridPane>
+            </VBox>
+            
+            <!-- Payment Methods -->
+            <VBox spacing="10" styleClass="payment-section">
+                <Label styleClass="form-label" text="Phương Thức Thanh Toán" />
+                
+                <VBox spacing="8">
+                    <RadioButton fx:id="rbCash" selected="true" text="💵 Tiền Mặt" styleClass="payment-option" />
+                    <RadioButton fx:id="rbVNPay" text="💳 VNPay (Chuyển khoản)" styleClass="payment-option" />
+                </VBox>
+            </VBox>
+            
+            <!-- Checkout Button -->
+            <Button fx:id="btnCheckout" onAction="#checkout" styleClass="checkout-btn" text="💰 THANH TOÁN" />
+            
+        </VBox>
+    </HBox>
+    
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+</VBox> 

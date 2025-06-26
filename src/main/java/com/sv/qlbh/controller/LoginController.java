@@ -10,6 +10,7 @@ import com.sv.qlbh.models.User;
 import com.sv.qlbh.utils.SessionManager;
 import java.io.IOException;
 import java.sql.SQLException;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,6 +39,12 @@ public class LoginController {
       
       @FXML
       private Label lblMessage;
+      
+      private HostServices hostServices;
+      
+      public void setHostServices(HostServices hostServices) {
+          this.hostServices = hostServices;
+      }
       
       @FXML
       private void initialize(){
@@ -76,6 +83,13 @@ public class LoginController {
                           try {
                               FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Dashboard.fxml"));
                               Parent root = loader.load();
+                              
+                              // Inject HostServices into DashboardController
+                              DashboardController dashboardController = loader.getController();
+                              if (dashboardController != null && hostServices != null) {
+                                  dashboardController.setHostServices(hostServices);
+                              }
+                              
                               Scene scene = new Scene(root);
                               Stage stage = (Stage) btnLogin.getScene().getWindow();
                               

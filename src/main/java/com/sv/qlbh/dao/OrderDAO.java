@@ -1,45 +1,222 @@
 package com.sv.qlbh.dao;
 
 import com.sv.qlbh.models.Order;
-import java.sql.SQLException;
+import com.sv.qlbh.models.OrderDetail;
+import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DAO interface for Order management
+ * DAO for Order management with VNPay support
  * @author nghip
  */
-public interface OrderDAO {
-    // Thêm đơn hàng mới
-    boolean add(Order order) throws SQLException;
+public class OrderDAO {
     
-    // Lấy đơn hàng theo ID
-    Order getById(int id) throws SQLException;
+    /**
+     * Tạo đơn hàng mới
+     */
+    public int createOrder(Order order) throws SQLException {
+        String sql = "INSERT INTO orders (customer_id, user_id, total_amount, discount_amount, " +
+                    "final_amount, payment_method, status, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
+            stmt.setObject(1, order.getCustomerId()); // nullable
+            stmt.setInt(2, order.getUserId());
+            stmt.setDouble(3, order.getTotalAmount());
+            stmt.setDouble(4, order.getDiscountAmount());
+            stmt.setDouble(5, order.getFinalAmount());
+            stmt.setString(6, order.getPaymentMethod());
+            stmt.setString(7, order.getStatus() != null ? order.getStatus() : "PROCESSING");
+            stmt.setString(8, order.getNote());
+            
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Tạo đơn hàng thất bại, không có dòng nào được tạo.");
+            }
+            
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int orderId = generatedKeys.getInt(1);
+                    order.setId(orderId);
+                    return orderId;
+                } else {
+                    throw new SQLException("Tạo đơn hàng thất bại, không lấy được ID.");
+                }
+            }
+        }
+    }
     
-    // Lấy tất cả đơn hàng
-    List<Order> getAll() throws SQLException;
+    /**
+     * Cập nhật trạng thái đơn hàng (dùng cho VNPay callback)
+     */
+    public boolean updateOrderStatus(int orderId, String status) throws SQLException {
+        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, status);
+            stmt.setInt(2, orderId);
+            
+            return stmt.executeUpdate() > 0;
+        }
+    }
     
-    // Lấy đơn hàng theo khách hàng
-    List<Order> getByCustomerId(int customerId) throws SQLException;
+    /**
+     * Cập nhật trạng thái đơn hàng với thông tin VNPay
+     */
+    public boolean updateOrderWithVNPayInfo(int orderId, String status, String transactionNo) throws SQLException {
+        String sql = "UPDATE orders SET status = ?, note = CONCAT(IFNULL(note, ''), ' - VNPay Transaction: ', ?) WHERE id = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, status);
+            stmt.setString(2, transactionNo);
+            stmt.setInt(3, orderId);
+            
+            return stmt.executeUpdate() > 0;
+        }
+    }
     
-    // Lấy đơn hàng theo user (nhân viên)
-    List<Order> getByUserId(int userId) throws SQLException;
+    /**
+     * Lấy đơn hàng theo ID
+     */
+    public Order getOrderById(int orderId) throws SQLException {
+        String sql = "SELECT * FROM orders WHERE id = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, orderId);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToOrder(rs);
+                }
+            }
+        }
+        return null;
+    }
     
-    // Lấy đơn hàng theo trạng thái
-    List<Order> getByStatus(String status) throws SQLException;
+    /**
+     * Lấy tất cả đơn hàng theo trạng thái
+     */
+    public List<Order> getOrdersByStatus(String status) throws SQLException {
+        String sql = "SELECT * FROM orders WHERE status = ? ORDER BY created_at DESC";
+        List<Order> orders = new ArrayList<>();
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, status);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    orders.add(mapResultSetToOrder(rs));
+                }
+            }
+        }
+        return orders;
+    }
     
-    // Lấy đơn hàng theo ngày
-    List<Order> getByDate(LocalDateTime startDate, LocalDateTime endDate) throws SQLException;
+    /**
+     * Lấy đơn hàng theo phương thức thanh toán
+     */
+    public List<Order> getOrdersByPaymentMethod(String paymentMethod) throws SQLException {
+        String sql = "SELECT * FROM orders WHERE payment_method = ? ORDER BY created_at DESC";
+        List<Order> orders = new ArrayList<>();
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, paymentMethod);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    orders.add(mapResultSetToOrder(rs));
+                }
+            }
+        }
+        return orders;
+    }
     
-    // Cập nhật trạng thái đơn hàng
-    boolean updateStatus(int orderId, String status) throws SQLException;
+    /**
+     * Lấy đơn hàng đang chờ thanh toán VNPay (PROCESSING)
+     */
+    public List<Order> getPendingVNPayOrders() throws SQLException {
+        String sql = "SELECT * FROM orders WHERE payment_method = 'VNPAY' AND status = 'PROCESSING' ORDER BY created_at DESC";
+        List<Order> orders = new ArrayList<>();
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    orders.add(mapResultSetToOrder(rs));
+                }
+            }
+        }
+        return orders;
+    }
     
-    // Lấy tổng doanh thu theo ngày
-    double getTotalRevenueByDate(LocalDateTime startDate, LocalDateTime endDate) throws SQLException;
+    /**
+     * Xóa đơn hàng (chỉ cho phép với đơn hàng PROCESSING hoặc FAILED)
+     */
+    public boolean deleteOrder(int orderId) throws SQLException {
+        String sql = "DELETE FROM orders WHERE id = ? AND status IN ('PROCESSING', 'FAILED')";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, orderId);
+            return stmt.executeUpdate() > 0;
+        }
+    }
     
-    // Lấy số lượng đơn hàng theo ngày
-    int getOrderCountByDate(LocalDateTime startDate, LocalDateTime endDate) throws SQLException;
+    /**
+     * Thống kê đơn hàng theo trạng thái
+     */
+    public int countOrdersByStatus(String status) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM orders WHERE status = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, status);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
+    }
     
-    // Tìm kiếm đơn hàng theo customer name hoặc phone
-    List<Order> searchByCustomer(String keyword) throws SQLException;
+    /**
+     * Map ResultSet thành Order object
+     */
+    private Order mapResultSetToOrder(ResultSet rs) throws SQLException {
+        Order order = new Order();
+        order.setId(rs.getInt("id"));
+        order.setCustomerId(rs.getObject("customer_id", Integer.class));
+        order.setUserId(rs.getInt("user_id"));
+        order.setTotalAmount(rs.getDouble("total_amount"));
+        order.setDiscountAmount(rs.getDouble("discount_amount"));
+        order.setFinalAmount(rs.getDouble("final_amount"));
+        order.setPaymentMethod(rs.getString("payment_method"));
+        order.setStatus(rs.getString("status"));
+        order.setNote(rs.getString("note"));
+        
+        Timestamp timestamp = rs.getTimestamp("created_at");
+        if (timestamp != null) {
+            order.setCreatedAt(timestamp.toLocalDateTime());
+        }
+        
+        return order;
+    }
 } 

@@ -15,6 +15,7 @@ public class OrderDetail {
     private int quantity;
     private double price;
     private double discountAmount;
+    private String productName; // For display purposes
 
     public int getId() {
         return id;
@@ -62,6 +63,18 @@ public class OrderDetail {
 
     public void setDiscountAmount(double discountAmount) {
         this.discountAmount = discountAmount;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public double getSubtotal() {
+        return (price * quantity) - discountAmount;
     }
 
     public OrderDetail(int id, int orderId, int productId, int quantity, double price, double discountAmount) {

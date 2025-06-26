@@ -218,14 +218,43 @@ qlbh-javafx/
 └── pom.xml                     # ✅ JavaFX 21.0.2, Java 21
 ```
 
+## 💳 VNPay Integration
+
+### 🏦 **Thanh toán VNPay**
+
+Tích hợp VNPay sandbox environment cho thanh toán online:
+
+- **VNPayConfig.java**: Configuration và crypto utilities
+- **VNPayService.java**: Payment URL generation và response handling
+- **Credentials**: Từ YouTube source (TMN_CODE: "4YUP19I4")
+- **Payment Flow**: Order → VNPay URL → Browser → Return → Status update
+
+#### 🔄 Workflow thanh toán:
+
+1. **Tạo đơn hàng** với status `PENDING`
+2. **Generate VNPay URL** với secure hash
+3. **Mở browser** tự động đến VNPay sandbox
+4. **Xử lý payment** (demo: auto-confirm sau 5s)
+5. **Update status** → `COMPLETED` hoặc `CANCELLED`
+
+#### 💰 Payment Methods hỗ trợ:
+
+- ✅ **CASH** - Tiền mặt
+- ✅ **CARD** - Thẻ tín dụng
+- ✅ **VNPAY** - VNPay online payment
+
 ## 🎯 Lộ trình phát triển
 
-### 🔄 Đang phát triển
+### ✅ Đã hoàn thành
 
-1. **💰 Hệ thống POS/Bán hàng** (Ưu tiên cao)
-   - Giao diện Sales.fxml đã sẵn sàng
-   - Cần implement SalesController.java
-   - Tích hợp với OrderDAO & OrderDetailDAO
+1. **💰 Hệ thống POS/Bán hàng**
+   - ✅ Giao diện Sales.fxml hoàn chỉnh
+   - ✅ SalesController.java đầy đủ tính năng
+   - ✅ Tích hợp OrderDAO & OrderDetailDAO
+   - ✅ VNPay payment integration
+   - ✅ Cart management & order processing
+
+### 🔄 Đang phát triển
 
 ### 📅 Kế hoạch tiếp theo
 

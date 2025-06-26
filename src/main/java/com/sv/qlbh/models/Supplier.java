@@ -14,19 +14,17 @@ public class Supplier {
     private String phone;
     private String email;
     private String address;
-    private String contactPerson;
     private boolean status;
 
     public Supplier() {
     }
 
-    public Supplier(int id, String name, String phone, String email, String address, String contactPerson, boolean status) {
+    public Supplier(int id, String name, String phone, String email, String address, boolean status) {
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
-        this.contactPerson = contactPerson;
         this.status = status;
     }
 
@@ -68,14 +66,6 @@ public class Supplier {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getContactPerson() {
-        return contactPerson;
-    }
-
-    public void setContactPerson(String contactPerson) {
-        this.contactPerson = contactPerson;
     }
 
     public boolean isStatus() {

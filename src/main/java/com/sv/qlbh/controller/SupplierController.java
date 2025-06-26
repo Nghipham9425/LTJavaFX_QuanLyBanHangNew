@@ -26,14 +26,12 @@ public class SupplierController implements Initializable {
     @FXML private TableColumn<Supplier, String> colPhone;
     @FXML private TableColumn<Supplier, String> colEmail;
     @FXML private TableColumn<Supplier, String> colAddress;
-    @FXML private TableColumn<Supplier, String> colContact;
     @FXML private TableColumn<Supplier, String> colStatus;
 
     @FXML private TextField txtName;
     @FXML private TextField txtPhone;
     @FXML private TextField txtEmail;
     @FXML private TextField txtAddress;
-    @FXML private TextField txtContact;
     @FXML private CheckBox chkStatus;
 
     private SupplierDAO supplierDAO;
@@ -56,7 +54,6 @@ public class SupplierController implements Initializable {
         colPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
-        colContact.setCellValueFactory(new PropertyValueFactory<>("contactPerson"));
         colStatus.setCellValueFactory(cellData -> {
             Supplier supplier = cellData.getValue();
             String status = supplier.isStatus() ? "Hoạt động" : "Ngưng hoạt động";
@@ -99,7 +96,6 @@ public class SupplierController implements Initializable {
         txtPhone.setText(supplier.getPhone());
         txtEmail.setText(supplier.getEmail());
         txtAddress.setText(supplier.getAddress());
-        txtContact.setText(supplier.getContactPerson());
         chkStatus.setSelected(supplier.isStatus());
     }
 
@@ -108,7 +104,6 @@ public class SupplierController implements Initializable {
         txtPhone.clear();
         txtEmail.clear();
         txtAddress.clear();
-        txtContact.clear();
         chkStatus.setSelected(true);
         selectedSupplier = null;
     }
@@ -145,7 +140,6 @@ public class SupplierController implements Initializable {
         supplier.setPhone(txtPhone.getText().trim());
         supplier.setEmail(txtEmail.getText().trim());
         supplier.setAddress(txtAddress.getText().trim());
-        supplier.setContactPerson(txtContact.getText().trim());
         supplier.setStatus(chkStatus.isSelected());
         return supplier;
     }
@@ -302,8 +296,7 @@ public class SupplierController implements Initializable {
             "Tên: " + selectedSupplier.getName() + "\n" +
             "SĐT: " + selectedSupplier.getPhone() + "\n" +
             "Email: " + selectedSupplier.getEmail() + "\n" +
-            "Địa chỉ: " + selectedSupplier.getAddress() + "\n" +
-            "Liên hệ: " + selectedSupplier.getContactPerson());
+            "Địa chỉ: " + selectedSupplier.getAddress());
     }
 
     @FXML
