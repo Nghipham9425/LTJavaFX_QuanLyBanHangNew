@@ -1,0 +1,21 @@
+# === Java build files ===
+*.class
+*.jar
+*.war
+*.ear
+
+# === Maven build directory ===
+/target/
+
+# === IDE files ===
+*.log
+*.iml
+*.ipr
+*.iws
+.idea/
+nbproject/private/
+nbproject/build-impl.xml
+
+# === OS files ===
+.DS_Store
+Thumbs.db
