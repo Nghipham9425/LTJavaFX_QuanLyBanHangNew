@@ -134,7 +134,9 @@ public class VNPayReturnHandler {
                 Platform.runLater(() -> showPaymentResult(result));
             }
             
-        } catch (Exception e) {
+        } catch (java.io.IOException e) {
+            System.err.println("IO error processing VNPay return: " + e.getMessage());
+        } catch (RuntimeException e) {
             System.err.println("Error processing VNPay return: " + e.getMessage());
         } finally {
             try {
@@ -162,7 +164,7 @@ public class VNPayReturnHandler {
                         String key = URLDecoder.decode(keyValue[0], StandardCharsets.UTF_8.toString());
                         String value = URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8.toString());
                         params.put(key, value);
-                    } catch (Exception e) {
+                    } catch (java.io.UnsupportedEncodingException e) {
                         System.err.println("Error decoding parameter: " + pair);
                     }
                 }

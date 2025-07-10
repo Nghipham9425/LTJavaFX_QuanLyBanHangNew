@@ -128,7 +128,10 @@ public class VNPayService {
                 result.setMessage("Chữ ký không hợp lệ");
             }
             
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
+            result.setSignatureValid(false);
+            result.setMessage("Lỗi định dạng số: " + e.getMessage());
+        } catch (RuntimeException e) {
             result.setSignatureValid(false);
             result.setMessage("Lỗi xử lý phản hồi: " + e.getMessage());
         }

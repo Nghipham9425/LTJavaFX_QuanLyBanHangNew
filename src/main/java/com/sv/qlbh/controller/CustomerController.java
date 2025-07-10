@@ -144,26 +144,33 @@ public class CustomerController implements Initializable {
         selectedCustomer = null;
     }
 
+    // Helper method để xử lý safely getText từ TextField
+    private String safeGetText(TextField textField) {
+        String text = textField.getText();
+        return text != null ? text.trim() : "";
+    }
+
     private boolean validateInput() {
-        if (txtName.getText().trim().isEmpty()) {
+        String name = safeGetText(txtName);
+        if (name.isEmpty()) {
             showWarning("Cảnh báo", "Vui lòng nhập tên khách hàng");
             return false;
         }
         
-        if (txtPhone.getText().trim().isEmpty()) {
+        String phone = safeGetText(txtPhone);
+        if (phone.isEmpty()) {
             showWarning("Cảnh báo", "Vui lòng nhập số điện thoại");
             return false;
         }
         
         // Validate phone number format
-        String phone = txtPhone.getText().trim();
         if (!phone.matches("^[0-9]{10,11}$")) {
             showWarning("Cảnh báo", "Số điện thoại phải có 10-11 chữ số");
             return false;
         }
         
         // Validate email if provided
-        String email = txtEmail.getText().trim();
+        String email = safeGetText(txtEmail);
         if (!email.isEmpty() && !email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             showWarning("Cảnh báo", "Email không hợp lệ");
             return false;
@@ -174,15 +181,11 @@ public class CustomerController implements Initializable {
 
     private Customer createCustomerFromForm() throws NumberFormatException {
         Customer customer = new Customer();
-        customer.setName(txtName.getText().trim());
-        customer.setPhone(txtPhone.getText().trim());
-        customer.setEmail(txtEmail.getText().trim());
-        customer.setGroupId(0);
-        
-        // Mặc định = 0 cho khách hàng mới
+        customer.setName(safeGetText(txtName));
+        customer.setPhone(safeGetText(txtPhone));
+        customer.setEmail(safeGetText(txtEmail));
         customer.setPoints(0);
         customer.setTotalSpent(0.0);
-        
         customer.setStatus(chkStatus.isSelected());
         return customer;
     }
@@ -191,7 +194,7 @@ public class CustomerController implements Initializable {
 
     @FXML
     private void handleSearch() {
-        String searchText = txtSearch.getText().trim();
+        String searchText = safeGetText(txtSearch);
         if (searchText.isEmpty()) {
             loadData(); // Reload all data
         } else {
@@ -200,7 +203,7 @@ public class CustomerController implements Initializable {
                 customerList.clear();
                 customerList.addAll(results);
                 showInfo("Tìm kiếm", "Tìm thấy " + results.size() + " khách hàng");
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 System.err.println("Lỗi khi tìm kiếm: " + e.getMessage());
                 showError("Lỗi", "Không thể tìm kiếm khách hàng");
             }
@@ -220,6 +223,7 @@ public class CustomerController implements Initializable {
         
         try {
             Customer customer = createCustomerFromForm();
+            customer.setGroupId(1);
             
             // Check if phone already exists
             Customer existing = customerDAO.getByPhone(customer.getPhone());
@@ -256,6 +260,14 @@ public class CustomerController implements Initializable {
         try {
             Customer customer = createCustomerFromForm();
             customer.setId(selectedCustomer.getId());
+            customer.setGroupId(selectedCustomer.getGroupId());
+            
+            // Kiểm tra trùng số điện thoại (ngoại trừ chính khách hàng đang update)
+            Customer existingByPhone = customerDAO.getByPhone(customer.getPhone());
+            if (existingByPhone != null && existingByPhone.getId() != selectedCustomer.getId()) {
+                showWarning("Cảnh báo", "Số điện thoại đã tồn tại trong hệ thống");
+                return;
+            }
             
             // Giữ nguyên điểm và tổng chi tiêu
             customer.setPoints(selectedCustomer.getPoints());
@@ -268,8 +280,9 @@ public class CustomerController implements Initializable {
             } else {
                 showError("Lỗi", "Không thể cập nhật khách hàng");
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             System.err.println("Lỗi khi cập nhật khách hàng: " + e.getMessage());
+            e.printStackTrace(); // Thêm để xem chi tiết lỗi
             showError("Lỗi", "Không thể cập nhật khách hàng: " + e.getMessage());
         }
     }
@@ -293,7 +306,7 @@ public class CustomerController implements Initializable {
                 } else {
                     showError("Lỗi", "Không thể vô hiệu hóa khách hàng");
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 System.err.println("Lỗi khi xóa khách hàng: " + e.getMessage());
                 showError("Lỗi", "Không thể vô hiệu hóa khách hàng: " + e.getMessage());
             }

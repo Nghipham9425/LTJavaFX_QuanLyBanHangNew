@@ -1,4 +1,4 @@
-/* Product Category Management Styles */
+/* Inventory Management Styles */
 
 .header-section {
   -fx-background-color: #f8f9fa;
@@ -52,7 +52,7 @@
 }
 
 .data-table .column-header {
-  -fx-background-color: #67b8e7;
+  -fx-background-color: #6c757d;
   -fx-text-fill: white;
   -fx-font-weight: bold;
   -fx-padding: 10px;
@@ -116,12 +116,55 @@
   -fx-font-weight: 500;
 }
 
-/* Readonly Fields */
-.readonly-field {
+/* ComboBox Styles */
+.combo-box {
+  -fx-background-color: white;
+  -fx-border-color: #dee2e6;
+  -fx-border-radius: 6px;
+  -fx-background-radius: 6px;
+  -fx-padding: 8px 12px;
+}
+
+.combo-box .arrow-button {
   -fx-background-color: #f8f9fa;
   -fx-border-color: #dee2e6;
-  -fx-text-fill: #6c757d;
-  -fx-padding: 8px 12px;
-  -fx-background-radius: 6px;
+}
+
+/* TextArea Styles */
+.text-area {
+  -fx-background-color: white;
+  -fx-border-color: #dee2e6;
   -fx-border-radius: 6px;
+  -fx-background-radius: 6px;
+  -fx-padding: 8px 12px;
+}
+
+/* TextField Styles */
+.text-field {
+  -fx-background-color: white;
+  -fx-border-color: #dee2e6;
+  -fx-border-radius: 6px;
+  -fx-background-radius: 6px;
+  -fx-padding: 8px 12px;
+}
+
+/* Inventory specific styles */
+.inventory-type-in {
+  -fx-text-fill: #28a745;
+  -fx-font-weight: bold;
+}
+
+.inventory-type-out {
+  -fx-text-fill: #dc3545;
+  -fx-font-weight: bold;
+}
+
+.stock-warning {
+  -fx-text-fill: #ffc107;
+  -fx-font-weight: bold;
+}
+
+.stock-danger {
+  -fx-text-fill: #dc3545;
+  -fx-font-weight: bold;
 }

@@ -13,6 +13,7 @@ import com.sv.qlbh.models.Customer;
 public interface CustomerDAO {
     List<Customer> getAll();
     Customer getById(int id);
+    Customer getByName(String name);
     Customer getByPhone(String phone);
     boolean insert(Customer customer);
     boolean update(Customer customer);

@@ -130,7 +130,7 @@ public class ProductCategoryController implements Initializable {
                     return new javafx.beans.property.SimpleStringProperty(
                         category != null ? category.getName() : "N/A"
                     );
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     return new javafx.beans.property.SimpleStringProperty("N/A");
                 }
             }
@@ -144,7 +144,7 @@ public class ProductCategoryController implements Initializable {
                     return new javafx.beans.property.SimpleStringProperty(
                         supplier != null ? supplier.getName() : "N/A"
                     );
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     return new javafx.beans.property.SimpleStringProperty("N/A");
                 }
             }
@@ -421,7 +421,7 @@ public class ProductCategoryController implements Initializable {
             List<Product> filteredProducts = productDAO.getByCategory(selectedFilter.getId());
             productList.clear();
             productList.addAll(filteredProducts);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             showError("Lỗi lọc sản phẩm", e.getMessage());
         }
     }
@@ -498,7 +498,7 @@ public class ProductCategoryController implements Initializable {
                     "Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước khi xóa danh mục này.");
                 return;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             showError("Lỗi kiểm tra danh mục", "Không thể kiểm tra sản phẩm trong danh mục: " + e.getMessage());
             return;
         }
@@ -515,7 +515,7 @@ public class ProductCategoryController implements Initializable {
                 loadProducts();
                 clearCategoryForm();
                 showInfo("Thành công", "Đã xóa danh mục: " + categoryName);
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 showError("Lỗi xóa danh mục", e.getMessage());
             }
         }
@@ -571,7 +571,7 @@ public class ProductCategoryController implements Initializable {
             loadProducts();
             clearProductForm();
             showInfo("Thành công", "Đã cập nhật sản phẩm: " + oldName + " → " + newName);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             showError("Lỗi cập nhật sản phẩm", e.getMessage());
         }
     }
@@ -592,7 +592,7 @@ public class ProductCategoryController implements Initializable {
                 loadProducts();
                 clearProductForm();
                 showInfo("Thành công", "Đã xóa sản phẩm");
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 showError("Lỗi xóa sản phẩm", e.getMessage());
             }
         }
@@ -624,7 +624,7 @@ public class ProductCategoryController implements Initializable {
             try {
                 Category category = categoryDAO.getById(selectedProduct.getCategoryId());
                 details.append("Danh mục: ").append(category != null ? category.getName() : "N/A").append("\n");
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 details.append("Danh mục: N/A\n");
             }
         }
@@ -634,7 +634,7 @@ public class ProductCategoryController implements Initializable {
             try {
                 Supplier supplier = supplierDAO.getById(selectedProduct.getSupplierId());
                 details.append("Nhà cung cấp: ").append(supplier != null ? supplier.getName() : "N/A").append("\n");
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 details.append("Nhà cung cấp: N/A\n");
             }
         }

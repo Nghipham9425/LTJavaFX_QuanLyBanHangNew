@@ -97,7 +97,7 @@ public class DashboardController implements Initializable {
             mainContainer.getChildren().addAll(statsRow, infoRow1, infoRow2, toolsRow);
             contentArea.getChildren().add(mainContainer);
             
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             // Fallback: tạo nội dung đơn giản
             javafx.scene.control.Label welcomeMsg = new javafx.scene.control.Label("Chào mừng đến với Dashboard!");
             welcomeMsg.setStyle("-fx-font-size: 18px; -fx-text-fill: #666; -fx-padding: 20px;");
@@ -263,8 +263,7 @@ public class DashboardController implements Initializable {
     @FXML
     private void handleInventoryManagement(javafx.scene.input.MouseEvent event) {
         welcomeLabel.setText("Quản lý kho");
-        // TODO: Tạo Inventory.fxml
-        System.out.println("Inventory Management clicked");
+        loadContent("/fxml/Inventory.fxml");
         updateActiveMenuItem(event);
     }
     

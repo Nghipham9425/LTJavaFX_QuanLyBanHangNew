@@ -65,6 +65,31 @@ public class CustomerDAOImpl implements CustomerDAO {
     }
 
     @Override
+    public Customer getByName(String name) {
+        String sql = "SELECT * FROM customers WHERE name = ? LIMIT 1";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                Customer customer = mapResultSetToCustomer(rs);
+                System.out.println("Tìm thấy khách hàng theo tên: " + customer.getName());
+                return customer;
+            } else {
+                System.out.println("Không tìm thấy khách hàng có tên: " + name);
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi tìm khách hàng theo tên '" + name + "': " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return null;
+    }
+
+    @Override
     public Customer getByPhone(String phone) {
         String sql = "SELECT * FROM customers WHERE phone = ?";
         
@@ -158,6 +183,16 @@ public class CustomerDAOImpl implements CustomerDAO {
             System.err.println("Lỗi khi cập nhật khách hàng ID " + customer.getId() + ": " + e.getMessage());
             System.err.println("SQL State: " + e.getSQLState());
             System.err.println("Error Code: " + e.getErrorCode());
+            
+            // Kiểm tra các lỗi thường gặp
+            if (e.getErrorCode() == 1062) { // MySQL trùng dữ liệu
+                System.err.println("Số điện thoại có thể đã tồn tại trong hệ thống");
+            } else if (e.getErrorCode() == 1452) { // Lỗi khóa ngoại
+                System.err.println("Mã nhóm khách hàng không hợp lệ");
+            } else if (e.getErrorCode() == 1054) { // Lỗi cột không tồn tại
+                System.err.println("Cột trong database không tồn tại");
+            }
+            
             e.printStackTrace();
             return false;
         }

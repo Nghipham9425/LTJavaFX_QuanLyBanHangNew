@@ -100,7 +100,7 @@ public class VNPayConfig {
                 hashData.append('=');
                 try {
                     hashData.append(java.net.URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                } catch (Exception e) {
+                } catch (java.io.UnsupportedEncodingException e) {
                     hashData.append(fieldValue);
                 }
                 if (itr.hasNext()) {
@@ -135,7 +135,7 @@ public class VNPayConfig {
                 sb.append(String.format("%02x", b & 0xff));
             }
             return sb.toString();
-        } catch (Exception ex) {
+        } catch (java.security.NoSuchAlgorithmException | java.security.InvalidKeyException ex) {
             return "";
         }
     }

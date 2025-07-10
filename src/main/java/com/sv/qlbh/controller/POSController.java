@@ -69,6 +69,7 @@ public class POSController implements Initializable {
     private CustomerDAO customerDAO = new CustomerDAOImpl();
     private OrderDAO orderDAO = new OrderDAO();
     private OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
+    private InventoryDAO inventoryDAO = new InventoryDAOImpl();
     
     // Other services
     private HostServices hostServices;
@@ -299,8 +300,26 @@ public class POSController implements Initializable {
             Order order = createOrderFromCart();
             int orderId = orderDAO.createOrder(order);
             
-            // Create order details
+            // Create order details and update inventory
             orderDetailDAO.createOrderDetailsFromCart(orderId, new ArrayList<>(cartItems));
+            
+            // Update stock and create inventory records for sale
+            for (CartItem item : cartItems) {
+                Product product = item.getProduct();
+                int newStock = product.getStock() - item.getQuantity();
+                
+                // Create inventory record for sale
+                Inventory inventoryEntry = new Inventory();
+                inventoryEntry.setProductId(product.getId());
+                inventoryEntry.setQuantity(item.getQuantity());
+                inventoryEntry.setType("OUT");
+                inventoryEntry.setReferenceId(orderId);
+                inventoryEntry.setReferenceType("SALE");
+                inventoryEntry.setNote("Bán hàng - Đơn #" + orderId + " - " + product.getName());
+                
+                // Use the combined method to update stock and inventory atomically
+                inventoryDAO.addInventoryEntryAndUpdateProductStock(inventoryEntry, product.getId(), newStock);
+            }
             
             // Get customer info for display
             Customer selectedCustomer = cmbCustomer.getSelectionModel().getSelectedItem();
@@ -380,7 +399,7 @@ public class POSController implements Initializable {
                 showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở trình duyệt để thanh toán VNPay");
             }
             
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             showAlert(Alert.AlertType.ERROR, "Lỗi VNPay", "Không thể tạo URL thanh toán: " + e.getMessage());
         }
     }

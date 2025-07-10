@@ -113,7 +113,7 @@
                         <Image url="@../images/icon_setting.png" />
                     </image>
                 </ImageView>
-                <Label text="Cài đặt" />
+                <Label text="Phú Tài" />
             </HBox>
         </VBox>
         

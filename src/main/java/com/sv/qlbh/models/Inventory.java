@@ -19,11 +19,12 @@ public class Inventory {
     private String referenceType;
     private String note;
     private LocalDateTime createdAt;
+    private String productName; // Để lưu trữ tên sản phẩm khi hiển thị trên UI
 
     public Inventory() {
     }
 
-    public Inventory(int id, int productId, int quantity, String type, Integer referenceId, String referenceType, String note, LocalDateTime createdAt) {
+    public Inventory(int id, int productId, int quantity, String type, Integer referenceId, String referenceType, String note, LocalDateTime createdAt, String productName) {
         this.id = id;
         this.productId = productId;
         this.quantity = quantity;
@@ -32,6 +33,7 @@ public class Inventory {
         this.referenceType = referenceType;
         this.note = note;
         this.createdAt = createdAt;
+        this.productName = productName;
     }
 
     public int getId() {
@@ -96,6 +98,15 @@ public class Inventory {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    // Getter và Setter cho productName
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
     
 }
