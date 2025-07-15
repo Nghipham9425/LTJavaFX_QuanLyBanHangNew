@@ -107,7 +107,6 @@
                     <Button onAction="#handleUpdate" styleClass="btn-warning" text="Sửa" HBox.hgrow="ALWAYS" />
                 </HBox>
                 <HBox spacing="10">
-                    <Button onAction="#handleDelete" styleClass="btn-danger" text="Xóa" HBox.hgrow="ALWAYS" />
                     <Button onAction="#handleClear" styleClass="btn-secondary" text="Làm mới" HBox.hgrow="ALWAYS" />
                 </HBox>
             </VBox>

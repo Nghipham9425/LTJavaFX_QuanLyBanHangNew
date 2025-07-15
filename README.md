@@ -4,12 +4,13 @@
 
 ## 📋 Tổng quan
 
-Hệ thống quản lý bán hàng với giao diện hiện đại, hỗ trợ:
+Hệ thống quản lý bán hàng với giao diện hiện đại, code được tối ưu hóa chuyên nghiệp, hỗ trợ:
 
 - Quản lý khách hàng với hệ thống phân hạng tự động
 - Quản lý sản phẩm và danh mục
 - Quản lý nhà cung cấp
-- Hệ thống POS/Bán hàng (đang phát triển)
+- **Quản lý đơn hàng hoàn chỉnh**
+- Hệ thống POS/Bán hàng với tích hợp VNPay
 - Dashboard thống kê
 - Xác thực người dùng theo vai trò
 
@@ -30,12 +31,29 @@ Hệ thống quản lý bán hàng với giao diện hiện đại, hỗ trợ:
 - Quản lý danh mục sản phẩm
 - Quản lý thông tin sản phẩm
 - Liên kết sản phẩm với danh mục
+- Smart delete với deactivation option
 
 ### ✅ **Quản lý nhà cung cấp**
 
 - Thông tin chi tiết nhà cung cấp
 - Người liên hệ và thông tin hợp đồng
 - CRUD hoàn chỉnh
+
+### ✅ **Quản lý đơn hàng**
+
+- **Real-time order tracking** với JOIN queries
+- **Tìm kiếm & lọc** theo ID/khách hàng/trạng thái
+- **Chi tiết đơn hàng** với danh sách sản phẩm
+- **Hủy đơn hàng** (chỉ cho PROCESSING orders)
+- **Integration** với Customer & Product modules
+
+### ✅ **Hệ thống POS/Bán hàng**
+
+- **Giao diện POS** hiện đại với cart management
+- **Tích hợp VNPay** sandbox environment
+- **Payment methods**: CASH/CARD/VNPAY
+- **Order processing** với database integration
+- **Inventory updates** real-time
 
 ### ✅ **Dashboard tổng quan**
 
@@ -56,7 +74,8 @@ Hệ thống quản lý bán hàng với giao diện hiện đại, hỗ trợ:
 - **Build Tool**: Maven 3.6+
 - **Database**: MySQL 8.0+
 - **Architecture**: MVC với DAO Pattern
-- **Exception Handling**: Specific SQLException handling
+- **Code Quality**: Utility classes để eliminate duplicate code
+- **Exception Handling**: Specific SQLException handling với user-friendly messages
 - **UI Framework**: JavaFX với FXML
 
 ## 📦 Yêu cầu hệ thống
@@ -175,20 +194,21 @@ mvn javafx:run
 ```
 qlbh-javafx/
 ├── src/main/java/com/sv/qlbh/
-│   ├── controller/              # Controllers
-│   │   ├── CustomerController.java      # ✅ Hoàn thành
-│   │   ├── DashboardController.java     # ✅ Hoàn thành
+│   ├── controller/              # Controllers (Optimized)
+│   │   ├── CustomerController.java      # ✅ Hoàn thành + Optimized
+│   │   ├── DashboardController.java     # ✅ Hoàn thành + Optimized
 │   │   ├── LoginController.java         # ✅ Hoàn thành
-│   │   ├── ProductCategoryController.java # ✅ Hoàn thành
-│   │   ├── SupplierController.java      # ✅ Hoàn thành
-│   │   └── SalesController.java         # 🔄 Đang phát triển
+│   │   ├── OrderController.java         # ✅ Mới - Quản lý đơn hàng
+│   │   ├── ProductCategoryController.java # ✅ Hoàn thành + Optimized
+│   │   ├── SupplierController.java      # ✅ Hoàn thành + Optimized
+│   │   └── POSController.java           # ✅ Hoàn thành + Optimized
 │   ├── dao/                     # Data Access Objects
 │   │   ├── CustomerDAO.java & CustomerDAOImpl.java  # ✅
 │   │   ├── SupplierDAO.java & SupplierDAOImpl.java  # ✅
 │   │   ├── CategoryDAO.java & CategoryDAOImpl.java  # ✅
 │   │   ├── ProductDAO.java & ProductDAOImpl.java    # ✅
 │   │   ├── UserDAO.java & UserDAOImpl.java          # ✅
-│   │   ├── OrderDAO.java & OrderDetailDAO.java     # 🔄 Interface sẵn sàng
+│   │   ├── OrderDAO.java & OrderDetailDAO.java     # ✅ Hoàn thành
 │   │   └── DatabaseConnection.java      # ✅ Hoàn thành
 │   ├── models/                  # Model classes
 │   │   ├── Customer.java        # ✅ Với CustomerGroup enum
@@ -196,10 +216,15 @@ qlbh-javafx/
 │   │   ├── Category.java        # ✅ Hoàn thành
 │   │   ├── Product.java         # ✅ Hoàn thành
 │   │   ├── User.java           # ✅ Hoàn thành
-│   │   ├── Order.java & OrderDetail.java # 🔄 Sẵn sàng cho POS
+│   │   ├── Order.java & OrderDetail.java # ✅ Hoàn thành
 │   │   └── ... (Promotion, Voucher, etc.)
-│   ├── utils/
-│   │   └── SessionManager.java  # ✅ Quản lý phiên đăng nhập
+│   ├── utils/                   # Utility Classes (NEW)
+│   │   ├── AlertUtils.java      # ✅ Centralized alert methods
+│   │   ├── ValidationUtils.java # ✅ Common validation patterns
+│   │   ├── DatabaseExceptionHandler.java # ✅ Smart SQL exception handling
+│   │   ├── SessionManager.java  # ✅ Quản lý phiên đăng nhập
+│   │   ├── VNPayConfig.java     # ✅ VNPay configuration
+│   │   └── VNPayService.java    # ✅ Payment service
 │   └── Main.java               # ✅ Entry point
 ├── src/main/resources/
 │   ├── fxml/                   # FXML layouts
@@ -207,12 +232,15 @@ qlbh-javafx/
 │   │   ├── Customer.fxml       # ✅ Table view + forms
 │   │   ├── Supplier.fxml       # ✅ CRUD hoàn chỉnh
 │   │   ├── ProductCategory.fxml # ✅ Hoàn thành
+│   │   ├── Order.fxml          # ✅ Mới - Order management UI
 │   │   ├── Login.fxml          # ✅ Hoàn thành
-│   │   └── Sales.fxml          # 🔄 POS interface đã tạo
+│   │   └── POS.fxml            # ✅ POS interface hoàn chỉnh
 │   ├── styles/                 # CSS files
 │   │   ├── dashboard.css       # ✅ Modern UI
 │   │   ├── customer.css        # ✅ Responsive design
 │   │   ├── supplier.css        # ✅ Professional styling
+│   │   ├── order.css           # ✅ Mới - Order management styling
+│   │   ├── pos.css             # ✅ POS interface styling
 │   │   └── ...
 │   └── images/                 # Icons & logos
 └── pom.xml                     # ✅ JavaFX 21.0.2, Java 21
@@ -243,26 +271,67 @@ Tích hợp VNPay sandbox environment cho thanh toán online:
 - ✅ **CARD** - Thẻ tín dụng
 - ✅ **VNPAY** - VNPay online payment
 
+## ⚡ Code Optimization & Best Practices
+
+### 🎯 **Utility Classes** (Mới trong v1.1)
+
+#### **AlertUtils.java**
+
+- Centralized alert dialog methods
+- Consistent user experience across all modules
+- Methods: `showInfo()`, `showWarning()`, `showError()`, `showSuccess()`, `showConfirmation()`
+
+#### **ValidationUtils.java**
+
+- Common validation patterns
+- Email & phone validation
+- Empty field checks và positive number validation
+
+#### **DatabaseExceptionHandler.java**
+
+- Smart SQL exception handling
+- User-friendly error messages in Vietnamese
+- Specific handling for MySQL error codes (1062, 1451, 1452)
+
+### 📊 **Code Quality Improvements**
+
+- **450+ lines of duplicate code eliminated**
+- **Consistent error handling** across all controllers
+- **DRY principle** applied với reusable utility functions
+- **Professional code structure** following industry best practices
+- **Maintainable codebase** - chỉ cần sửa 1 nơi thay vì 5 nơi
+
 ## 🎯 Lộ trình phát triển
 
-### ✅ Đã hoàn thành
+### ✅ Đã hoàn thành (v1.1)
 
 1. **💰 Hệ thống POS/Bán hàng**
-   - ✅ Giao diện Sales.fxml hoàn chỉnh
-   - ✅ SalesController.java đầy đủ tính năng
+
+   - ✅ Giao diện POS.fxml hoàn chỉnh
+   - ✅ POSController.java đầy đủ tính năng
    - ✅ Tích hợp OrderDAO & OrderDetailDAO
    - ✅ VNPay payment integration
    - ✅ Cart management & order processing
 
-### 🔄 Đang phát triển
-
-### 📅 Kế hoạch tiếp theo
-
 2. **📋 Quản lý đơn hàng**
-3. **📦 Quản lý kho**
-4. **🎫 Hệ thống khuyến mãi & voucher**
-5. **📊 Báo cáo thống kê**
-6. **⏰ Quản lý ca làm việc**
+
+   - ✅ OrderController.java hoàn chỉnh
+   - ✅ Order.fxml với search/filter functionality
+   - ✅ Real-time order tracking
+   - ✅ Order cancellation system
+
+3. **🔧 Code Optimization**
+   - ✅ Utility classes implementation
+   - ✅ Duplicate code elimination
+   - ✅ Professional error handling
+   - ✅ Code quality improvements
+
+### 📅 Kế hoạch tiếp theo (v1.2)
+
+4. **📦 Quản lý kho**
+5. **🎫 Hệ thống khuyến mãi & voucher**
+6. **📊 Báo cáo thống kê**
+7. **⏰ Quản lý ca làm việc**
 
 ## 🛠️ Tính năng nổi bật
 
@@ -275,7 +344,8 @@ Tích hợp VNPay sandbox environment cho thanh toán online:
 ### 🔒 **Exception Handling chuyên nghiệp**
 
 - Xử lý SQLException cụ thể (error codes 1062, 1452, 1451)
-- Thông báo lỗi tiếng Việt thân thiện
+- Thông báo lỗi tiếng Việt thân thiện với `DatabaseExceptionHandler`
+- Smart delete với deactivation option
 - Logging chi tiết cho debug
 
 ### 🎨 **UI/UX hiện đại**
@@ -283,6 +353,14 @@ Tích hợp VNPay sandbox environment cho thanh toán online:
 - Responsive design với CSS
 - Icons đẹp mắt
 - Navigation menu trực quan
+- Consistent user experience với `AlertUtils`
+
+### ⚡ **Code Quality & Performance**
+
+- **Utility classes** để eliminate duplicate code
+- **Consistent validation** patterns across modules
+- **Professional error handling** với user-friendly messages
+- **Maintainable architecture** following best practices
 
 ## 🐛 Xử lý sự cố
 
@@ -311,11 +389,11 @@ mvn clean install
 
 ## 📊 Thống kê dự án
 
-- **📁 Total Files**: 50+ files
-- **💻 Lines of Code**: 5000+ lines
+- **📁 Total Files**: 60+ files
+- **💻 Lines of Code**: 6000+ lines (optimized)
 - **🗄️ Database Tables**: 15+ tables
-- **✅ Completion**: ~70% core features
-- **🔄 Active Development**: POS System
+- **✅ Completion**: ~85% core features
+- **🔧 Code Quality**: Professional-grade với utility classes
 
 ## 🤝 Đóng góp
 
@@ -324,20 +402,29 @@ Dự án được phát triển theo chuẩn:
 - **Clean Code** principles
 - **MVC Architecture**
 - **DAO Pattern**
+- **DRY Principle** với utility classes
 - **Exception Handling** best practices
 - **Vietnamese UI/UX**
 
 ## 📝 Ghi chú phiên bản
 
-### v1.0 (Current)
+### v1.1 (Current)
 
+- ✅ **Order Management** hoàn chỉnh
+- ✅ **POS System** với VNPay integration
+- ✅ **Code Optimization** với utility classes
 - ✅ Customer Management với auto-grouping
 - ✅ Product & Category Management
 - ✅ Supplier Management
 - ✅ Dashboard với navigation hoàn chỉnh
 - ✅ Authentication system
-- 🔄 POS System (đang phát triển)
+
+### v1.0 (Previous)
+
+- ✅ Basic CRUD operations
+- ✅ Database integration
+- ✅ UI foundations
 
 ---
 
-**🎯 Mục tiêu**: Xây dựng hệ thống quản lý bán hàng hoàn chỉnh, chuyên nghiệp cho doanh nghiệp Việt Nam
+**🎯 Mục tiêu**: Xây dựng hệ thống quản lý bán hàng hoàn chỉnh, chuyên nghiệp cho doanh nghiệp Việt Nam với code quality cao

@@ -15,6 +15,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import com.sv.qlbh.dao.CustomerDAO;
+import com.sv.qlbh.dao.CustomerDAOImpl;
 
 /**
  * VNPay Return Handler for JavaFX Application
@@ -179,7 +181,6 @@ public class VNPayReturnHandler {
      */
     private static void updateOrderStatus(VNPayService.VNPayResult result) {
         try {
-            // Extract order ID từ unique transaction reference (format: orderId_timestamp)
             String txnRef = result.getOrderId();
             int orderId;
             if (txnRef.contains("_")) {
@@ -194,6 +195,25 @@ public class VNPayReturnHandler {
             
             if (updated) {
                 System.out.println("Order " + orderId + " status updated to: " + status);
+                
+                if (result.isTransactionSuccess()) {
+                    try {
+                        Order order = orderDAO.getOrderById(orderId);
+                        if (order != null && order.getCustomerId() != null && order.getCustomerId() > 0) {
+                            CustomerDAO customerDAO = new CustomerDAOImpl();
+                            customerDAO.updateTotalSpent(order.getCustomerId(), order.getFinalAmount());
+                            
+                            int pointsToAdd = (int)(order.getFinalAmount() / 1000);
+                            if (pointsToAdd > 0) {
+                                customerDAO.updatePoints(order.getCustomerId(), pointsToAdd);
+                            }
+                            
+                            System.out.println("Đã cập nhật điểm và tổng chi tiêu cho khách hàng ID: " + order.getCustomerId());
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Lỗi cập nhật điểm khách hàng VNPay: " + e.getMessage());
+                    }
+                }
             } else {
                 System.err.println("Failed to update order " + orderId);
             }

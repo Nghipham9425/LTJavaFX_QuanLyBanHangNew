@@ -3,6 +3,9 @@ package com.sv.qlbh.controller;
 import com.sv.qlbh.dao.CustomerDAO;
 import com.sv.qlbh.dao.CustomerDAOImpl;
 import com.sv.qlbh.models.Customer;
+import com.sv.qlbh.utils.AlertUtils;
+import com.sv.qlbh.utils.ValidationUtils;
+import com.sv.qlbh.utils.DatabaseExceptionHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -13,7 +16,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -33,7 +35,7 @@ public class CustomerController implements Initializable {
     @FXML private TableColumn<Customer, String> colEmail;
     @FXML private TableColumn<Customer, String> colGroup;
     @FXML private TableColumn<Customer, Integer> colPoints;
-    @FXML private TableColumn<Customer, Double> colTotalSpent;
+    @FXML private TableColumn<Customer, String> colTotalSpent;
     @FXML private TableColumn<Customer, String> colStatus;
 
     // Form Controls
@@ -52,22 +54,12 @@ public class CustomerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Initialize DAO
         customerDAO = new CustomerDAOImpl();
-        
-        // Initialize list
         customerList = FXCollections.observableArrayList();
         
-        // Setup table
         setupTableColumns();
-        
-        // Setup ComboBox
         setupComboBox();
-        
-        // Setup event handlers
         setupEventHandlers();
-        
-        // Load data
         loadData();
         
         System.out.println("Customer Management loaded successfully!");
@@ -83,14 +75,18 @@ public class CustomerController implements Initializable {
             return new javafx.beans.property.SimpleStringProperty(customer.getGroupDisplayName());
         });
         colPoints.setCellValueFactory(new PropertyValueFactory<>("points"));
-        colTotalSpent.setCellValueFactory(new PropertyValueFactory<>("totalSpent"));
+        colTotalSpent.setCellValueFactory(cellData -> {
+            Customer customer = cellData.getValue();
+            java.text.DecimalFormat df = new java.text.DecimalFormat("#,##0");
+            String formattedAmount = df.format(customer.getTotalSpent());
+            return new javafx.beans.property.SimpleStringProperty(formattedAmount);
+        });
         colStatus.setCellValueFactory(cellData -> {
             Customer customer = cellData.getValue();
             String status = customer.isStatus() ? "Hoạt động" : "Ngưng hoạt động";
             return new javafx.beans.property.SimpleStringProperty(status);
         });
         
-        // Set table data
         tableCustomer.setItems(customerList);
     }
 
@@ -100,7 +96,6 @@ public class CustomerController implements Initializable {
     }
 
     private void setupEventHandlers() {
-        // Table selection handler
         tableCustomer.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, newSelection) -> {
                 selectedCustomer = newSelection;
@@ -119,7 +114,7 @@ public class CustomerController implements Initializable {
             System.out.println("Đã load " + customers.size() + " khách hàng");
         } catch (RuntimeException e) {
             System.err.println("RuntimeException khi load khách hàng: " + e.getMessage());
-            showError("Lỗi cơ sở dữ liệu", "Không thể kết nối database để tải danh sách khách hàng");
+            AlertUtils.showDatabaseError("Không thể kết nối database để tải danh sách khách hàng");
         }
     }
 
@@ -128,7 +123,10 @@ public class CustomerController implements Initializable {
         txtPhone.setText(customer.getPhone());
         txtEmail.setText(customer.getEmail());
         txtPoints.setText(String.valueOf(customer.getPoints()));
-        txtTotalSpent.setText(String.valueOf(customer.getTotalSpent()));
+        
+        java.text.DecimalFormat df = new java.text.DecimalFormat("#,##0");
+        txtTotalSpent.setText(df.format(customer.getTotalSpent()));
+        
         txtGroup.setText(customer.getGroupDisplayName());
         chkStatus.setSelected(customer.isStatus());
     }
@@ -144,46 +142,36 @@ public class CustomerController implements Initializable {
         selectedCustomer = null;
     }
 
-    // Helper method để xử lý safely getText từ TextField
-    private String safeGetText(TextField textField) {
-        String text = textField.getText();
-        return text != null ? text.trim() : "";
-    }
-
     private boolean validateInput() {
-        String name = safeGetText(txtName);
-        if (name.isEmpty()) {
-            showWarning("Cảnh báo", "Vui lòng nhập tên khách hàng");
+        if (ValidationUtils.isEmpty(txtName.getText())) {
+            AlertUtils.showValidationError("Vui lòng nhập tên khách hàng");
             return false;
         }
         
-        String phone = safeGetText(txtPhone);
-        if (phone.isEmpty()) {
-            showWarning("Cảnh báo", "Vui lòng nhập số điện thoại");
+        if (ValidationUtils.isEmpty(txtPhone.getText())) {
+            AlertUtils.showValidationError("Vui lòng nhập số điện thoại");
             return false;
         }
         
-        // Validate phone number format
-        if (!phone.matches("^[0-9]{10,11}$")) {
-            showWarning("Cảnh báo", "Số điện thoại phải có 10-11 chữ số");
+        if (!ValidationUtils.isValidPhone(txtPhone.getText().trim())) {
+            AlertUtils.showValidationError("Số điện thoại phải có 10-11 chữ số");
             return false;
         }
         
-        // Validate email if provided
-        String email = safeGetText(txtEmail);
-        if (!email.isEmpty() && !email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            showWarning("Cảnh báo", "Email không hợp lệ");
+        String email = txtEmail.getText().trim();
+        if (!email.isEmpty() && !ValidationUtils.isValidEmail(email)) {
+            AlertUtils.showValidationError("Email không hợp lệ");
             return false;
         }
         
         return true;
     }
 
-    private Customer createCustomerFromForm() throws NumberFormatException {
+    private Customer createCustomerFromForm() {
         Customer customer = new Customer();
-        customer.setName(safeGetText(txtName));
-        customer.setPhone(safeGetText(txtPhone));
-        customer.setEmail(safeGetText(txtEmail));
+        customer.setName(txtName.getText().trim());
+        customer.setPhone(txtPhone.getText().trim());
+        customer.setEmail(txtEmail.getText().trim());
         customer.setPoints(0);
         customer.setTotalSpent(0.0);
         customer.setStatus(chkStatus.isSelected());
@@ -194,18 +182,18 @@ public class CustomerController implements Initializable {
 
     @FXML
     private void handleSearch() {
-        String searchText = safeGetText(txtSearch);
+        String searchText = txtSearch.getText().trim();
         if (searchText.isEmpty()) {
-            loadData(); // Reload all data
+            loadData();
         } else {
             try {
                 List<Customer> results = customerDAO.searchByName(searchText);
                 customerList.clear();
                 customerList.addAll(results);
-                showInfo("Tìm kiếm", "Tìm thấy " + results.size() + " khách hàng");
+                AlertUtils.showInfo("Tìm kiếm", "Tìm thấy " + results.size() + " khách hàng");
             } catch (RuntimeException e) {
                 System.err.println("Lỗi khi tìm kiếm: " + e.getMessage());
-                showError("Lỗi", "Không thể tìm kiếm khách hàng");
+                AlertUtils.showError("Lỗi", "Không thể tìm kiếm khách hàng");
             }
         }
     }
@@ -214,7 +202,7 @@ public class CustomerController implements Initializable {
     private void handleRefresh() {
         loadData();
         clearForm();
-        showInfo("Làm mới", "Đã tải lại dữ liệu thành công");
+        AlertUtils.showInfo("Làm mới", "Đã tải lại dữ liệu thành công");
     }
 
     @FXML
@@ -223,35 +211,30 @@ public class CustomerController implements Initializable {
         
         try {
             Customer customer = createCustomerFromForm();
-            customer.setGroupId(1);
             
-            // Check if phone already exists
             Customer existing = customerDAO.getByPhone(customer.getPhone());
             if (existing != null) {
-                showWarning("Cảnh báo", "Số điện thoại đã tồn tại trong hệ thống");
+                AlertUtils.showWarning("Cảnh báo", "Số điện thoại đã tồn tại trong hệ thống");
                 return;
             }
             
             if (customerDAO.insert(customer)) {
                 loadData();
                 clearForm();
-                showInfo("Thành công", "Thêm khách hàng thành công");
+                AlertUtils.showSuccess("Thêm khách hàng thành công");
             } else {
-                showError("Lỗi", "Không thể thêm khách hàng");
+                AlertUtils.showError("Lỗi", "Không thể thêm khách hàng");
             }
-        } catch (NumberFormatException e) {
-            System.err.println("NumberFormatException khi thêm khách hàng: " + e.getMessage());
-            showWarning("Dữ liệu không hợp lệ", e.getMessage());
         } catch (RuntimeException e) {
             System.err.println("RuntimeException khi thêm khách hàng: " + e.getMessage());
-            showError("Lỗi cơ sở dữ liệu", "Không thể thêm khách hàng vào database");
+            AlertUtils.showDatabaseError("Không thể thêm khách hàng vào database");
         }
     }
 
     @FXML
     private void handleUpdate() {
         if (selectedCustomer == null) {
-            showWarning("Cảnh báo", "Vui lòng chọn khách hàng cần sửa");
+            AlertUtils.showWarning("Cảnh báo", "Vui lòng chọn khách hàng cần sửa");
             return;
         }
         
@@ -260,56 +243,26 @@ public class CustomerController implements Initializable {
         try {
             Customer customer = createCustomerFromForm();
             customer.setId(selectedCustomer.getId());
-            customer.setGroupId(selectedCustomer.getGroupId());
             
-            // Kiểm tra trùng số điện thoại (ngoại trừ chính khách hàng đang update)
             Customer existingByPhone = customerDAO.getByPhone(customer.getPhone());
             if (existingByPhone != null && existingByPhone.getId() != selectedCustomer.getId()) {
-                showWarning("Cảnh báo", "Số điện thoại đã tồn tại trong hệ thống");
+                AlertUtils.showWarning("Cảnh báo", "Số điện thoại đã tồn tại trong hệ thống");
                 return;
             }
             
-            // Giữ nguyên điểm và tổng chi tiêu
             customer.setPoints(selectedCustomer.getPoints());
             customer.setTotalSpent(selectedCustomer.getTotalSpent());
             
             if (customerDAO.update(customer)) {
                 loadData();
                 clearForm();
-                showInfo("Thành công", "Cập nhật khách hàng thành công");
+                AlertUtils.showSuccess("Cập nhật khách hàng thành công");
             } else {
-                showError("Lỗi", "Không thể cập nhật khách hàng");
+                AlertUtils.showError("Lỗi", "Không thể cập nhật khách hàng");
             }
         } catch (RuntimeException e) {
             System.err.println("Lỗi khi cập nhật khách hàng: " + e.getMessage());
-            e.printStackTrace(); // Thêm để xem chi tiết lỗi
-            showError("Lỗi", "Không thể cập nhật khách hàng: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    private void handleDelete() {
-        if (selectedCustomer == null) {
-            showWarning("Cảnh báo", "Vui lòng chọn khách hàng cần xóa");
-            return;
-        }
-        
-        Optional<ButtonType> result = showConfirmation("Xác nhận", 
-            "Bạn có chắc chắn muốn vô hiệu hóa khách hàng: " + selectedCustomer.getName() + "?");
-        
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            try {
-                if (customerDAO.delete(selectedCustomer.getId())) {
-                    loadData();
-                    clearForm();
-                    showInfo("Thành công", "Vô hiệu hóa khách hàng thành công");
-                } else {
-                    showError("Lỗi", "Không thể vô hiệu hóa khách hàng");
-                }
-            } catch (RuntimeException e) {
-                System.err.println("Lỗi khi xóa khách hàng: " + e.getMessage());
-                showError("Lỗi", "Không thể vô hiệu hóa khách hàng: " + e.getMessage());
-            }
+            AlertUtils.showError("Lỗi", "Không thể cập nhật khách hàng: " + e.getMessage());
         }
     }
 
@@ -321,12 +274,11 @@ public class CustomerController implements Initializable {
     @FXML
     private void handleViewDetails() {
         if (selectedCustomer == null) {
-            showWarning("Cảnh báo", "Vui lòng chọn khách hàng để xem chi tiết");
+            AlertUtils.showWarning("Cảnh báo", "Vui lòng chọn khách hàng để xem chi tiết");
             return;
         }
         
-        // TODO: Open detail dialog
-        showInfo("Chi tiết khách hàng", 
+        AlertUtils.showInfo("Chi tiết khách hàng", 
             "Tên: " + selectedCustomer.getName() + "\n" +
             "SĐT: " + selectedCustomer.getPhone() + "\n" +
             "Email: " + selectedCustomer.getEmail() + "\n" +
@@ -336,48 +288,14 @@ public class CustomerController implements Initializable {
 
     @FXML
     private void handleExportExcel() {
-        // TODO: Export to Excel
-        showInfo("Xuất Excel", "Chức năng xuất Excel sẽ được phát triển sau");
+        AlertUtils.showInfo("Xuất Excel", "Chức năng xuất Excel sẽ được phát triển sau");
     }
 
-    // TODO: Implement when order module ready
     private void recalculateCustomerPoints(int customerId) {
         System.out.println("Tính toán lại điểm cho khách hàng ID: " + customerId);
     }
     
     private void recalculateTotalSpent(int customerId) {
         System.out.println("Tính toán lại tổng chi tiêu cho khách hàng ID: " + customerId);
-    }
-
-    private void showInfo(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showWarning(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private Optional<ButtonType> showConfirmation(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        return alert.showAndWait();
     }
 } 

@@ -13,6 +13,9 @@ import com.sv.qlbh.dao.SupplierDAOImpl;
 import com.sv.qlbh.models.Category;
 import com.sv.qlbh.models.Product;
 import com.sv.qlbh.models.Supplier;
+import com.sv.qlbh.utils.AlertUtils;
+import com.sv.qlbh.utils.ValidationUtils;
+import com.sv.qlbh.utils.DatabaseExceptionHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -86,26 +89,17 @@ public class ProductCategoryController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Initialize DAOs
         categoryDAO = new CategoryDAOImpl();
         productDAO = new ProductDAOImpl();
         supplierDAO = new SupplierDAOImpl();
         
-        // Initialize lists
         categoryList = FXCollections.observableArrayList();
         productList = FXCollections.observableArrayList();
         supplierList = FXCollections.observableArrayList();
         
-        // Setup table columns
         setupTableColumns();
-        
-        // Setup ComboBox display
         setupCategoryComboBoxes();
-        
-        // Setup event handlers
         setupEventHandlers();
-        
-        // Load initial data
         loadData();
     }
 
@@ -156,13 +150,11 @@ public class ProductCategoryController implements Initializable {
             return new javafx.beans.property.SimpleStringProperty(status);
         });
         
-        // Set table data
         tableCategory.setItems(categoryList);
         tableProduct.setItems(productList);
     }
 
     private void setupEventHandlers() {
-        // Category table selection
         tableCategory.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, newSelection) -> {
                 selectedCategory = newSelection;
@@ -172,7 +164,6 @@ public class ProductCategoryController implements Initializable {
             }
         );
         
-        // Product table selection
         tableProduct.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, newSelection) -> {
                 selectedProduct = newSelection;
@@ -182,7 +173,6 @@ public class ProductCategoryController implements Initializable {
             }
         );
         
-        // Category filter change
         cbCategoryFilter.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldSelection, newSelection) -> {
                 filterProducts();
@@ -202,7 +192,6 @@ public class ProductCategoryController implements Initializable {
             categoryList.clear();
             categoryList.addAll(categories);
             
-            // Update category filter combo
             cbCategoryFilter.getItems().clear();
             Category allCategories = new Category();
             allCategories.setId(0);
@@ -211,18 +200,16 @@ public class ProductCategoryController implements Initializable {
             cbCategoryFilter.getItems().addAll(categories);
             cbCategoryFilter.setValue(allCategories);
             
-            // Update product category combo
             cbProdCategory.getItems().clear();
             cbProdCategory.getItems().addAll(categories);
             
         } catch (SQLException e) {
             System.err.println("SQLException khi load danh mục: " + e.getMessage());
-            showError("Lỗi cơ sở dữ liệu", "Không thể kết nối database để tải danh mục");
+            AlertUtils.showDatabaseError("Không thể kết nối database để tải danh mục");
         }
     }
     
     private void setupCategoryComboBoxes() {
-        // Setup category filter combo
         cbCategoryFilter.setCellFactory(listView -> new javafx.scene.control.ListCell<Category>() {
             @Override
             protected void updateItem(Category category, boolean empty) {
@@ -247,7 +234,6 @@ public class ProductCategoryController implements Initializable {
             }
         });
         
-        // Setup product category combo
         cbProdCategory.setCellFactory(listView -> new javafx.scene.control.ListCell<Category>() {
             @Override
             protected void updateItem(Category category, boolean empty) {
@@ -272,7 +258,6 @@ public class ProductCategoryController implements Initializable {
             }
         });
         
-        // Setup product supplier combo
         cbProdSupplier.setCellFactory(listView -> new javafx.scene.control.ListCell<Supplier>() {
             @Override
             protected void updateItem(Supplier supplier, boolean empty) {
@@ -305,7 +290,7 @@ public class ProductCategoryController implements Initializable {
             productList.addAll(products);
         } catch (SQLException e) {
             System.err.println("SQLException khi load sản phẩm: " + e.getMessage());
-            showError("Lỗi cơ sở dữ liệu", "Không thể kết nối database để tải sản phẩm");
+            AlertUtils.showDatabaseError("Không thể kết nối database để tải sản phẩm");
         }
     }
 
@@ -315,13 +300,12 @@ public class ProductCategoryController implements Initializable {
             supplierList.clear();
             supplierList.addAll(suppliers);
             
-            // Update product supplier combo
             cbProdSupplier.getItems().clear();
             cbProdSupplier.getItems().addAll(suppliers);
             
         } catch (SQLException e) {
             System.err.println("SQLException khi load nhà cung cấp: " + e.getMessage());
-            showError("Lỗi cơ sở dữ liệu", "Không thể kết nối database để tải nhà cung cấp");
+            AlertUtils.showDatabaseError("Không thể kết nối database để tải nhà cung cấp");
         }
     }
 
@@ -338,7 +322,6 @@ public class ProductCategoryController implements Initializable {
         txtProdStock.setText(String.valueOf(product.getStock()));
         chkProdStatus.setSelected(product.isStatus());
         
-        // Set category selection - tìm category trong ComboBox items
         if (product.getCategoryId() != 0) {
             for (Category category : cbProdCategory.getItems()) {
                 if (category.getId() == product.getCategoryId()) {
@@ -350,7 +333,6 @@ public class ProductCategoryController implements Initializable {
             cbProdCategory.setValue(null);
         }
         
-        // Set supplier selection - tìm supplier trong ComboBox items
         if (product.getSupplierId() != 0) {
             for (Supplier supplier : cbProdSupplier.getItems()) {
                 if (supplier.getId() == product.getSupplierId()) {
@@ -397,7 +379,7 @@ public class ProductCategoryController implements Initializable {
             productList.addAll(searchResults);
         } catch (SQLException e) {
             System.err.println("SQLException khi tìm kiếm sản phẩm: " + e.getMessage());
-            showError("Lỗi cơ sở dữ liệu", "Không thể tìm kiếm sản phẩm");
+            AlertUtils.showDatabaseError("Không thể tìm kiếm sản phẩm");
         }
     }
 
@@ -407,7 +389,7 @@ public class ProductCategoryController implements Initializable {
         clearCategoryForm();
         clearProductForm();
         txtSearch.clear();
-        showInfo("Thành công", "Đã làm mới dữ liệu");
+        AlertUtils.showSuccess("Đã làm mới dữ liệu");
     }
 
     private void filterProducts() {
@@ -422,7 +404,7 @@ public class ProductCategoryController implements Initializable {
             productList.clear();
             productList.addAll(filteredProducts);
         } catch (SQLException e) {
-            showError("Lỗi lọc sản phẩm", e.getMessage());
+            AlertUtils.showError("Lỗi lọc sản phẩm", e.getMessage());
         }
     }
 
@@ -440,21 +422,16 @@ public class ProductCategoryController implements Initializable {
             categoryDAO.add(category);
             loadCategories();
             clearCategoryForm();
-            showInfo("Thành công", "Đã thêm danh mục mới: " + category.getName());
+            AlertUtils.showSuccess("Đã thêm danh mục mới: " + category.getName());
         } catch (SQLException e) {
-            System.err.println("SQLException khi thêm danh mục: " + e.getMessage());
-            if (e.getErrorCode() == 1062) {
-                showError("Lỗi trùng lặp", "Tên danh mục đã tồn tại trong hệ thống");
-            } else {
-                showError("Lỗi cơ sở dữ liệu", "Không thể thêm danh mục: " + e.getMessage());
-            }
+            DatabaseExceptionHandler.handleSQLException(e, "thêm danh mục");
         }
     }
 
     @FXML
     private void handleUpdateCategory() {
         if (selectedCategory == null) {
-            showWarning("Chưa chọn danh mục", "Vui lòng chọn danh mục cần sửa");
+            AlertUtils.showWarning("Chưa chọn danh mục", "Vui lòng chọn danh mục cần sửa");
             return;
         }
         
@@ -468,55 +445,49 @@ public class ProductCategoryController implements Initializable {
             
             categoryDAO.update(selectedCategory);
             loadCategories();
-            loadProducts(); // Reload to update category names in product table
+            loadProducts();
             clearCategoryForm();
-            showInfo("Thành công", "Đã cập nhật danh mục: " + oldName + " → " + newName);
+            AlertUtils.showSuccess("Đã cập nhật danh mục: " + oldName + " → " + newName);
         } catch (SQLException e) {
-            System.err.println("SQLException khi cập nhật danh mục: " + e.getMessage());
-            if (e.getErrorCode() == 1062) {
-                showError("Lỗi trùng lặp", "Tên danh mục đã tồn tại trong hệ thống");
-            } else {
-                showError("Lỗi cơ sở dữ liệu", "Không thể cập nhật danh mục: " + e.getMessage());
-            }
+            DatabaseExceptionHandler.handleSQLException(e, "cập nhật danh mục");
         }
     }
 
     @FXML
     private void handleDeleteCategory() {
         if (selectedCategory == null) {
-            showWarning("Chưa chọn danh mục", "Vui lòng chọn danh mục cần xóa");
+            AlertUtils.showWarning("Chưa chọn danh mục", "Vui lòng chọn danh mục cần xóa");
             return;
         }
         
-        // Kiểm tra xem có sản phẩm nào đang sử dụng danh mục này không
         try {
             List<Product> productsInCategory = productDAO.getByCategory(selectedCategory.getId());
             if (!productsInCategory.isEmpty()) {
-                showWarning("Không thể xóa danh mục", 
+                AlertUtils.showWarning("Không thể xóa danh mục", 
                     "Danh mục '" + selectedCategory.getName() + "' đang được sử dụng bởi " + 
                     productsInCategory.size() + " sản phẩm.\n\n" +
                     "Vui lòng xóa hoặc chuyển các sản phẩm sang danh mục khác trước khi xóa danh mục này.");
                 return;
             }
         } catch (SQLException e) {
-            showError("Lỗi kiểm tra danh mục", "Không thể kiểm tra sản phẩm trong danh mục: " + e.getMessage());
+            AlertUtils.showError("Lỗi kiểm tra danh mục", "Không thể kiểm tra sản phẩm trong danh mục: " + e.getMessage());
             return;
         }
         
-        Optional<ButtonType> result = showConfirmation("Xác nhận xóa", 
+        Optional<ButtonType> result = AlertUtils.showConfirmation("Xác nhận xóa", 
             "Bạn có chắc chắn muốn xóa danh mục '" + selectedCategory.getName() + "'?\n\n" +
             "Hành động này không thể hoàn tác.");
         
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                String categoryName = selectedCategory.getName(); // Lưu tên trước khi xóa
+                String categoryName = selectedCategory.getName();
                 categoryDAO.delete(selectedCategory.getId());
                 loadCategories();
                 loadProducts();
                 clearCategoryForm();
-                showInfo("Thành công", "Đã xóa danh mục: " + categoryName);
+                AlertUtils.showSuccess("Đã xóa danh mục: " + categoryName);
             } catch (SQLException e) {
-                showError("Lỗi xóa danh mục", e.getMessage());
+                AlertUtils.showError("Lỗi xóa danh mục", e.getMessage());
             }
         }
     }
@@ -540,23 +511,16 @@ public class ProductCategoryController implements Initializable {
             productDAO.add(product);
             loadProducts();
             clearProductForm();
-            showInfo("Thành công", "Đã thêm sản phẩm mới: " + product.getName());
+            AlertUtils.showSuccess("Đã thêm sản phẩm mới: " + product.getName());
         } catch (SQLException e) {
-            System.err.println("SQLException khi thêm sản phẩm: " + e.getMessage());
-            if (e.getErrorCode() == 1062) {
-                showError("Lỗi trùng lặp", "Mã vạch đã tồn tại trong hệ thống");
-            } else if (e.getErrorCode() == 1452) {
-                showError("Lỗi ràng buộc", "Danh mục hoặc nhà cung cấp không hợp lệ");
-            } else {
-                showError("Lỗi cơ sở dữ liệu", "Không thể thêm sản phẩm: " + e.getMessage());
-            }
+            DatabaseExceptionHandler.handleSQLException(e, "thêm sản phẩm");
         }
     }
 
     @FXML
     private void handleUpdateProduct() {
         if (selectedProduct == null) {
-            showWarning("Chưa chọn sản phẩm", "Vui lòng chọn sản phẩm cần sửa");
+            AlertUtils.showWarning("Chưa chọn sản phẩm", "Vui lòng chọn sản phẩm cần sửa");
             return;
         }
         
@@ -570,31 +534,65 @@ public class ProductCategoryController implements Initializable {
             productDAO.update(selectedProduct);
             loadProducts();
             clearProductForm();
-            showInfo("Thành công", "Đã cập nhật sản phẩm: " + oldName + " → " + newName);
+            AlertUtils.showSuccess("Đã cập nhật sản phẩm: " + oldName + " → " + newName);
         } catch (SQLException e) {
-            showError("Lỗi cập nhật sản phẩm", e.getMessage());
+            AlertUtils.showError("Lỗi cập nhật sản phẩm", e.getMessage());
         }
     }
 
     @FXML
     private void handleDeleteProduct() {
         if (selectedProduct == null) {
-            showWarning("Chưa chọn sản phẩm", "Vui lòng chọn sản phẩm cần xóa");
+            AlertUtils.showWarning("Chưa chọn sản phẩm", "Vui lòng chọn sản phẩm cần xóa");
             return;
         }
         
-        Optional<ButtonType> result = showConfirmation("Xác nhận xóa", 
-            "Bạn có chắc chắn muốn xóa sản phẩm '" + selectedProduct.getName() + "'?");
+        Optional<ButtonType> result = AlertUtils.showConfirmation("Xác nhận xóa", 
+            "Bạn có chắc chắn muốn xóa sản phẩm '" + selectedProduct.getName() + "'?\n\n" +
+            "Lưu ý: Không thể xóa sản phẩm đã có giao dịch bán hàng hoặc nhập kho.");
         
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
+                String productName = selectedProduct.getName();
                 productDAO.delete(selectedProduct.getId());
                 loadProducts();
                 clearProductForm();
-                showInfo("Thành công", "Đã xóa sản phẩm");
+                AlertUtils.showSuccess("Đã xóa sản phẩm: " + productName);
             } catch (SQLException e) {
-                showError("Lỗi xóa sản phẩm", e.getMessage());
+                System.err.println("SQLException khi xóa sản phẩm: " + e.getMessage());
+                System.err.println("Error Code: " + e.getErrorCode());
+                
+                if (e.getErrorCode() == 1451) {
+                    Alert choice = new Alert(Alert.AlertType.CONFIRMATION);
+                    choice.setTitle("Không thể xóa - Chọn hành động khác");
+                    choice.setHeaderText("Sản phẩm đang được sử dụng trong hệ thống");
+                    choice.setContentText("Sản phẩm '" + selectedProduct.getName() + "' đang có giao dịch liên quan.\n\n" +
+                        "Bạn muốn đặt sản phẩm về trạng thái 'Không hoạt động' thay vì xóa?");
+                    
+                    ButtonType deactivateBtn = new ButtonType("Đặt không hoạt động");
+                    ButtonType cancelBtn = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
+                    choice.getButtonTypes().setAll(deactivateBtn, cancelBtn);
+                    
+                    Optional<ButtonType> choiceResult = choice.showAndWait();
+                    if (choiceResult.isPresent() && choiceResult.get() == deactivateBtn) {
+                        handleDeactivateProduct();
+                    }
+                } else {
+                    AlertUtils.showError("Lỗi xóa sản phẩm", "Không thể xóa: " + e.getMessage());
+                }
             }
+        }
+    }
+    
+    private void handleDeactivateProduct() {
+        try {
+            selectedProduct.setStatus(false);
+            productDAO.update(selectedProduct);
+            loadProducts();
+            clearProductForm();
+            AlertUtils.showSuccess("Đã đặt sản phẩm '" + selectedProduct.getName() + "' về trạng thái không hoạt động");
+        } catch (SQLException e) {
+            AlertUtils.showError("Lỗi", "Không thể cập nhật trạng thái sản phẩm: " + e.getMessage());
         }
     }
     
@@ -607,11 +605,10 @@ public class ProductCategoryController implements Initializable {
     @FXML
     private void handleViewProduct() {
         if (selectedProduct == null) {
-            showWarning("Chưa chọn sản phẩm", "Vui lòng chọn sản phẩm để xem chi tiết");
+            AlertUtils.showWarning("Chưa chọn sản phẩm", "Vui lòng chọn sản phẩm để xem chi tiết");
             return;
         }
         
-        // Show product details
         StringBuilder details = new StringBuilder();
         details.append("ID: ").append(selectedProduct.getId()).append("\n");
         details.append("Tên sản phẩm: ").append(selectedProduct.getName()).append("\n");
@@ -629,7 +626,6 @@ public class ProductCategoryController implements Initializable {
             }
         }
         
-        // Thêm thông tin supplier
         if (selectedProduct.getSupplierId() != 0) {
             try {
                 Supplier supplier = supplierDAO.getById(selectedProduct.getSupplierId());
@@ -641,19 +637,19 @@ public class ProductCategoryController implements Initializable {
         
         details.append("Trạng thái: ").append(selectedProduct.isStatus() ? "Hoạt động" : "Không hoạt động");
         
-        showInfo("Chi tiết sản phẩm", details.toString());
+        AlertUtils.showInfo("Chi tiết sản phẩm", details.toString());
     }
 
     @FXML
     private void handleExportExcel() {
-        showInfo("Xuất Excel", "Tính năng xuất Excel sẽ được triển khai sau");
+        AlertUtils.showInfo("Xuất Excel", "Tính năng xuất Excel sẽ được triển khai sau");
     }
 
     // Validation Methods
 
     private boolean validateCategoryInput() {
-        if (txtCatName.getText().trim().isEmpty()) {
-            showWarning("Dữ liệu không hợp lệ", "Vui lòng nhập tên danh mục");
+        if (ValidationUtils.isEmpty(txtCatName.getText())) {
+            AlertUtils.showValidationError("Vui lòng nhập tên danh mục");
             txtCatName.requestFocus();
             return false;
         }
@@ -661,30 +657,26 @@ public class ProductCategoryController implements Initializable {
     }
 
     private boolean validateProductInput() {
-        if (txtProdName.getText().trim().isEmpty()) {
-            showWarning("Dữ liệu không hợp lệ", "Vui lòng nhập tên sản phẩm");
+        if (ValidationUtils.isEmpty(txtProdName.getText())) {
+            AlertUtils.showValidationError("Vui lòng nhập tên sản phẩm");
             txtProdName.requestFocus();
             return false;
         }
         
-        if (txtProdBarcode.getText().trim().isEmpty()) {
-            showWarning("Dữ liệu không hợp lệ", "Vui lòng nhập mã vạch");
+        if (ValidationUtils.isEmpty(txtProdBarcode.getText())) {
+            AlertUtils.showValidationError("Vui lòng nhập mã vạch");
             txtProdBarcode.requestFocus();
             return false;
         }
         
-        try {
-            Double.parseDouble(txtProdPrice.getText().trim());
-        } catch (NumberFormatException e) {
-            showWarning("Dữ liệu không hợp lệ", "Giá bán phải là số");
+        if (!ValidationUtils.isPositiveNumber(txtProdPrice.getText())) {
+            AlertUtils.showValidationError("Giá bán phải là số dương");
             txtProdPrice.requestFocus();
             return false;
         }
         
-        try {
-            Double.parseDouble(txtProdCostPrice.getText().trim());
-        } catch (NumberFormatException e) {
-            showWarning("Dữ liệu không hợp lệ", "Giá nhập phải là số");
+        if (!ValidationUtils.isPositiveNumber(txtProdCostPrice.getText())) {
+            AlertUtils.showValidationError("Giá nhập phải là số dương");
             txtProdCostPrice.requestFocus();
             return false;
         }
@@ -692,19 +684,19 @@ public class ProductCategoryController implements Initializable {
         try {
             Integer.parseInt(txtProdStock.getText().trim());
         } catch (NumberFormatException e) {
-            showWarning("Dữ liệu không hợp lệ", "Tồn kho phải là số nguyên");
+            AlertUtils.showValidationError("Tồn kho phải là số nguyên");
             txtProdStock.requestFocus();
             return false;
         }
         
         if (cbProdCategory.getValue() == null) {
-            showWarning("Dữ liệu không hợp lệ", "Vui lòng chọn danh mục");
+            AlertUtils.showValidationError("Vui lòng chọn danh mục");
             cbProdCategory.requestFocus();
             return false;
         }
         
         if (cbProdSupplier.getValue() == null) {
-            showWarning("Dữ liệu không hợp lệ", "Vui lòng chọn nhà cung cấp");
+            AlertUtils.showValidationError("Vui lòng chọn nhà cung cấp");
             cbProdSupplier.requestFocus();
             return false;
         }
@@ -720,7 +712,6 @@ public class ProductCategoryController implements Initializable {
         product.setStock(Integer.parseInt(txtProdStock.getText().trim()));
         product.setCategoryId(cbProdCategory.getValue().getId());
         
-        // Set supplier ID
         if (cbProdSupplier.getValue() != null) {
             product.setSupplierId(cbProdSupplier.getValue().getId());
         } else {
@@ -728,39 +719,5 @@ public class ProductCategoryController implements Initializable {
         }
         
         product.setStatus(chkProdStatus.isSelected());
-    }
-
-    // Dialog Methods
-
-    private void showInfo(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showWarning(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private Optional<ButtonType> showConfirmation(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        return alert.showAndWait();
     }
 }

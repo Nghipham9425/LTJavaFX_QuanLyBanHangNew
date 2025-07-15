@@ -4,6 +4,7 @@ import com.sv.qlbh.dao.*;
 import com.sv.qlbh.models.*;
 import com.sv.qlbh.utils.SessionManager;
 import com.sv.qlbh.utils.VNPayService;
+import com.sv.qlbh.utils.AlertUtils;
 import javafx.application.HostServices;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -173,12 +174,17 @@ public class POSController implements Initializable {
             List<Product> products = productDAO.getAll(); // Use existing method
             productList.setAll(products);
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải danh sách sản phẩm: " + e.getMessage());
+            AlertUtils.showError("Lỗi", "Không thể tải danh sách sản phẩm: " + e.getMessage());
         }
     }
     
     private void loadCustomers() {
-        List<Customer> customers = customerDAO.getAll(); // Use existing method - doesn't throw SQLException
+        List<Customer> allCustomers = customerDAO.getAll();
+        
+        // Filter only active customers (status = true)
+        List<Customer> activeCustomers = allCustomers.stream()
+                .filter(Customer::isStatus)
+                .collect(java.util.stream.Collectors.toList());
         
         // Add "Walk-in Customer" option
         Customer walkInCustomer = new Customer();
@@ -188,7 +194,7 @@ public class POSController implements Initializable {
         
         customerList.clear();
         customerList.add(walkInCustomer); // Add walk-in option first
-        customerList.addAll(customers);
+        customerList.addAll(activeCustomers); // Only add active customers
         
         // Set walk-in as default selection
         cmbCustomer.setValue(walkInCustomer);
@@ -204,7 +210,7 @@ public class POSController implements Initializable {
             List<Product> products = productDAO.getByName(searchText); // Use existing method
             productList.setAll(products);
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Lỗi tìm kiếm sản phẩm: " + e.getMessage());
+            AlertUtils.showError("Lỗi", "Lỗi tìm kiếm sản phẩm: " + e.getMessage());
         }
     }
     
@@ -222,13 +228,13 @@ public class POSController implements Initializable {
     @FXML
     private void handleAddNewCustomer() {
         // TODO: Implement add new customer functionality
-        showAlert(Alert.AlertType.INFORMATION, "Thông báo", "Chức năng thêm khách hàng mới sẽ được phát triển sau.");
+        AlertUtils.showInfo("Thông báo", "Chức năng thêm khách hàng mới sẽ được phát triển sau.");
     }
     
     @FXML
     private void addToCart(Product product) {
         if (product == null || product.getStock() <= 0) {
-            showAlert(Alert.AlertType.WARNING, "Cảnh báo", "Sản phẩm không có trong kho!");
+            AlertUtils.showWarning("Cảnh báo", "Sản phẩm không có trong kho!");
             return;
         }
         
@@ -240,7 +246,7 @@ public class POSController implements Initializable {
                     tblCart.refresh();
                     return;
                 } else {
-                    showAlert(Alert.AlertType.WARNING, "Cảnh báo", "Không đủ hàng trong kho!");
+                    AlertUtils.showWarning("Cảnh báo", "Không đủ hàng trong kho!");
                     return;
                 }
             }
@@ -291,24 +297,38 @@ public class POSController implements Initializable {
     @FXML
     private void checkout() {
         if (cartItems.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Cảnh báo", "Giỏ hàng trống!");
+            AlertUtils.showWarning("Cảnh báo", "Giỏ hàng trống!");
             return;
         }
         
+        // Validate customer status if a real customer is selected
+        Customer selectedCustomer = cmbCustomer.getSelectionModel().getSelectedItem();
+        if (selectedCustomer != null && selectedCustomer.getId() > 0) {
+            // Recheck customer status from database
+            try {
+                Customer currentCustomer = customerDAO.getById(selectedCustomer.getId());
+                if (currentCustomer == null || !currentCustomer.isStatus()) {
+                    AlertUtils.showWarning("Cảnh báo", 
+                        "Khách hàng '" + selectedCustomer.getName() + "' đã bị ngưng kích hoạt!\n" +
+                        "Vui lòng chọn khách hàng khác hoặc chọn 'Khách vãng lai'.");
+                    return;
+                }
+            } catch (RuntimeException e) {
+                AlertUtils.showError("Lỗi", "Không thể kiểm tra trạng thái khách hàng: " + e.getMessage());
+                return;
+            }
+        }
+        
         try {
-            // Create order
             Order order = createOrderFromCart();
             int orderId = orderDAO.createOrder(order);
             
-            // Create order details and update inventory
             orderDetailDAO.createOrderDetailsFromCart(orderId, new ArrayList<>(cartItems));
             
-            // Update stock and create inventory records for sale
             for (CartItem item : cartItems) {
                 Product product = item.getProduct();
                 int newStock = product.getStock() - item.getQuantity();
                 
-                // Create inventory record for sale
                 Inventory inventoryEntry = new Inventory();
                 inventoryEntry.setProductId(product.getId());
                 inventoryEntry.setQuantity(item.getQuantity());
@@ -317,24 +337,34 @@ public class POSController implements Initializable {
                 inventoryEntry.setReferenceType("SALE");
                 inventoryEntry.setNote("Bán hàng - Đơn #" + orderId + " - " + product.getName());
                 
-                // Use the combined method to update stock and inventory atomically
                 inventoryDAO.addInventoryEntryAndUpdateProductStock(inventoryEntry, product.getId(), newStock);
             }
-            
-            // Get customer info for display
-            Customer selectedCustomer = cmbCustomer.getSelectionModel().getSelectedItem();
             String customerInfo = (selectedCustomer != null && selectedCustomer.getId() > 0) 
                 ? "Khách hàng: " + selectedCustomer.getName()
                 : "Khách vãng lai";
             
-            // Process payment
             if (rbVNPay.isSelected()) {
-                order.setId(orderId); // Set the generated ID
+                order.setId(orderId);
                 processVNPayPayment(order, customerInfo);
             } else {
-                // Cash payment - complete immediately
                 orderDAO.updateOrderStatus(orderId, "COMPLETED");
-                showAlert(Alert.AlertType.INFORMATION, "✅ Thanh toán thành công!", 
+                
+                if (selectedCustomer != null && selectedCustomer.getId() > 0) {
+                    try {
+                        customerDAO.updateTotalSpent(selectedCustomer.getId(), order.getFinalAmount());
+                        
+                        int pointsToAdd = (int)(order.getFinalAmount() / 1000);
+                        if (pointsToAdd > 0) {
+                            customerDAO.updatePoints(selectedCustomer.getId(), pointsToAdd);
+                        }
+                        
+                        System.out.println("Đã cập nhật điểm và tổng chi tiêu cho khách hàng ID: " + selectedCustomer.getId());
+                    } catch (Exception e) {
+                        System.err.println("Lỗi cập nhật điểm khách hàng: " + e.getMessage());
+                    }
+                }
+                
+                AlertUtils.showSuccess("Thanh toán thành công!\n" +
                          "Đơn hàng #" + orderId + " đã được tạo thành công!\n" +
                          customerInfo + "\n" +
                          "Phương thức: Tiền mặt\n" +
@@ -343,7 +373,7 @@ public class POSController implements Initializable {
             }
             
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tạo đơn hàng: " + e.getMessage());
+            AlertUtils.showError("Lỗi", "Không thể tạo đơn hàng: " + e.getMessage());
         }
     }
     
@@ -388,7 +418,7 @@ public class POSController implements Initializable {
             
             if (hostServices != null) {
                 hostServices.showDocument(paymentUrl);
-                showAlert(Alert.AlertType.INFORMATION, "🏦 VNPay - Chờ thanh toán", 
+                AlertUtils.showInfo("🏦 VNPay - Chờ thanh toán", 
                          "Đơn hàng #" + order.getId() + " đã được tạo\n" +
                          customerInfo + "\n" +
                          "Tổng tiền: " + lblTotal.getText() + "\n\n" +
@@ -396,19 +426,13 @@ public class POSController implements Initializable {
                          "Trạng thái đơn hàng sẽ được cập nhật tự động.");
                 clearCart();
             } else {
-                showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể mở trình duyệt để thanh toán VNPay");
+                AlertUtils.showError("Lỗi", "Không thể mở trình duyệt để thanh toán VNPay");
             }
             
         } catch (RuntimeException e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi VNPay", "Không thể tạo URL thanh toán: " + e.getMessage());
+            AlertUtils.showError("Lỗi VNPay", "Không thể tạo URL thanh toán: " + e.getMessage());
         }
     }
     
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+
 } 

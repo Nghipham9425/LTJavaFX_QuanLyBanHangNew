@@ -3,6 +3,9 @@ package com.sv.qlbh.controller;
 import com.sv.qlbh.dao.SupplierDAO;
 import com.sv.qlbh.dao.SupplierDAOImpl;
 import com.sv.qlbh.models.Supplier;
+import com.sv.qlbh.utils.AlertUtils;
+import com.sv.qlbh.utils.ValidationUtils;
+import com.sv.qlbh.utils.DatabaseExceptionHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -82,12 +85,10 @@ public class SupplierController implements Initializable {
             System.out.println("Đã load " + suppliers.size() + " nhà cung cấp");
         } catch (SQLException e) {
             System.err.println("SQLException khi load nhà cung cấp: " + e.getMessage());
-            System.err.println("SQL State: " + e.getSQLState());
-            System.err.println("Error Code: " + e.getErrorCode());
-            showError("Lỗi cơ sở dữ liệu", "Không thể tải danh sách nhà cung cấp");
+            AlertUtils.showDatabaseError("Không thể tải danh sách nhà cung cấp");
         } catch (RuntimeException e) {
             System.err.println("RuntimeException khi load nhà cung cấp: " + e.getMessage());
-            showError("Lỗi hệ thống", "Không thể kết nối cơ sở dữ liệu");
+            AlertUtils.showDatabaseError("Không thể kết nối cơ sở dữ liệu");
         }
     }
 
@@ -109,25 +110,24 @@ public class SupplierController implements Initializable {
     }
 
     private boolean validateInput() {
-        if (txtName.getText().trim().isEmpty()) {
-            showWarning("Cảnh báo", "Vui lòng nhập tên nhà cung cấp");
+        if (ValidationUtils.isEmpty(txtName.getText())) {
+            AlertUtils.showValidationError("Vui lòng nhập tên nhà cung cấp");
             return false;
         }
         
-        if (txtPhone.getText().trim().isEmpty()) {
-            showWarning("Cảnh báo", "Vui lòng nhập số điện thoại");
+        if (ValidationUtils.isEmpty(txtPhone.getText())) {
+            AlertUtils.showValidationError("Vui lòng nhập số điện thoại");
             return false;
         }
         
-        String phone = txtPhone.getText().trim();
-        if (!phone.matches("^[0-9]{10,11}$")) {
-            showWarning("Cảnh báo", "Số điện thoại phải có 10-11 chữ số");
+        if (!ValidationUtils.isValidPhone(txtPhone.getText().trim())) {
+            AlertUtils.showValidationError("Số điện thoại phải có 10-11 chữ số");
             return false;
         }
         
         String email = txtEmail.getText().trim();
-        if (!email.isEmpty() && !email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            showWarning("Cảnh báo", "Email không hợp lệ");
+        if (!email.isEmpty() && !ValidationUtils.isValidEmail(email)) {
+            AlertUtils.showValidationError("Email không hợp lệ");
             return false;
         }
         
@@ -154,15 +154,13 @@ public class SupplierController implements Initializable {
                 List<Supplier> results = supplierDAO.searchByName(searchText);
                 supplierList.clear();
                 supplierList.addAll(results);
-                showInfo("Tìm kiếm", "Tìm thấy " + results.size() + " nhà cung cấp");
+                AlertUtils.showInfo("Tìm kiếm", "Tìm thấy " + results.size() + " nhà cung cấp");
             } catch (SQLException e) {
                 System.err.println("SQLException khi tìm kiếm: " + e.getMessage());
-                System.err.println("SQL State: " + e.getSQLState());
-                System.err.println("Error Code: " + e.getErrorCode());
-                showError("Lỗi cơ sở dữ liệu", "Không thể tìm kiếm nhà cung cấp");
+                AlertUtils.showDatabaseError("Không thể tìm kiếm nhà cung cấp");
             } catch (RuntimeException e) {
                 System.err.println("RuntimeException khi tìm kiếm: " + e.getMessage());
-                showError("Lỗi hệ thống", "Không thể kết nối cơ sở dữ liệu");
+                AlertUtils.showDatabaseError("Không thể kết nối cơ sở dữ liệu");
             }
         }
     }
@@ -171,7 +169,7 @@ public class SupplierController implements Initializable {
     private void handleRefresh() {
         loadData();
         clearForm();
-        showInfo("Làm mới", "Đã tải lại dữ liệu thành công");
+        AlertUtils.showSuccess("Đã tải lại dữ liệu thành công");
     }
 
     @FXML
@@ -184,32 +182,22 @@ public class SupplierController implements Initializable {
             if (supplierDAO.add(supplier)) {
                 loadData();
                 clearForm();
-                showInfo("Thành công", "Thêm nhà cung cấp thành công");
+                AlertUtils.showSuccess("Thêm nhà cung cấp thành công");
             } else {
-                showError("Lỗi", "Không thể thêm nhà cung cấp");
+                AlertUtils.showError("Lỗi", "Không thể thêm nhà cung cấp");
             }
         } catch (SQLException e) {
-            System.err.println("SQLException khi thêm nhà cung cấp: " + e.getMessage());
-            System.err.println("SQL State: " + e.getSQLState());
-            System.err.println("Error Code: " + e.getErrorCode());
-            
-            if (e.getErrorCode() == 1062) {
-                showWarning("Thông tin trùng lặp", "Thông tin nhà cung cấp đã tồn tại trong hệ thống");
-            } else if (e.getErrorCode() == 1452) {
-                showWarning("Lỗi ràng buộc", "Dữ liệu không hợp lệ hoặc vi phạm ràng buộc");
-            } else {
-                showError("Lỗi cơ sở dữ liệu", "Không thể thêm nhà cung cấp: " + e.getMessage());
-            }
+            DatabaseExceptionHandler.handleSQLException(e, "thêm nhà cung cấp");
         } catch (RuntimeException e) {
             System.err.println("RuntimeException khi thêm nhà cung cấp: " + e.getMessage());
-            showError("Lỗi hệ thống", "Không thể kết nối cơ sở dữ liệu");
+            AlertUtils.showDatabaseError("Không thể kết nối cơ sở dữ liệu");
         }
     }
 
     @FXML
     private void handleUpdate() {
         if (selectedSupplier == null) {
-            showWarning("Cảnh báo", "Vui lòng chọn nhà cung cấp cần sửa");
+            AlertUtils.showWarning("Cảnh báo", "Vui lòng chọn nhà cung cấp cần sửa");
             return;
         }
         
@@ -222,36 +210,26 @@ public class SupplierController implements Initializable {
             if (supplierDAO.update(supplier)) {
                 loadData();
                 clearForm();
-                showInfo("Thành công", "Cập nhật nhà cung cấp thành công");
+                AlertUtils.showSuccess("Cập nhật nhà cung cấp thành công");
             } else {
-                showError("Lỗi", "Không thể cập nhật nhà cung cấp");
+                AlertUtils.showError("Lỗi", "Không thể cập nhật nhà cung cấp");
             }
         } catch (SQLException e) {
-            System.err.println("SQLException khi cập nhật nhà cung cấp: " + e.getMessage());
-            System.err.println("SQL State: " + e.getSQLState());
-            System.err.println("Error Code: " + e.getErrorCode());
-            
-            if (e.getErrorCode() == 1062) {
-                showWarning("Thông tin trùng lặp", "Thông tin nhà cung cấp đã tồn tại trong hệ thống");
-            } else if (e.getErrorCode() == 1452) {
-                showWarning("Lỗi ràng buộc", "Dữ liệu không hợp lệ hoặc vi phạm ràng buộc");
-            } else {
-                showError("Lỗi cơ sở dữ liệu", "Không thể cập nhật nhà cung cấp: " + e.getMessage());
-            }
+            DatabaseExceptionHandler.handleSQLException(e, "cập nhật nhà cung cấp");
         } catch (RuntimeException e) {
             System.err.println("RuntimeException khi cập nhật nhà cung cấp: " + e.getMessage());
-            showError("Lỗi hệ thống", "Không thể kết nối cơ sở dữ liệu");
+            AlertUtils.showDatabaseError("Không thể kết nối cơ sở dữ liệu");
         }
     }
 
     @FXML
     private void handleDelete() {
         if (selectedSupplier == null) {
-            showWarning("Cảnh báo", "Vui lòng chọn nhà cung cấp cần xóa");
+            AlertUtils.showWarning("Cảnh báo", "Vui lòng chọn nhà cung cấp cần xóa");
             return;
         }
         
-        Optional<ButtonType> result = showConfirmation("Xác nhận", 
+        Optional<ButtonType> result = AlertUtils.showConfirmation("Xác nhận", 
             "Bạn có chắc chắn muốn xóa nhà cung cấp: " + selectedSupplier.getName() + "?");
         
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -259,23 +237,15 @@ public class SupplierController implements Initializable {
                 if (supplierDAO.delete(selectedSupplier.getId())) {
                     loadData();
                     clearForm();
-                    showInfo("Thành công", "Xóa nhà cung cấp thành công");
+                    AlertUtils.showSuccess("Xóa nhà cung cấp thành công");
                 } else {
-                    showError("Lỗi", "Không thể xóa nhà cung cấp");
+                    AlertUtils.showError("Lỗi", "Không thể xóa nhà cung cấp");
                 }
             } catch (SQLException e) {
-                System.err.println("SQLException khi xóa nhà cung cấp: " + e.getMessage());
-                System.err.println("SQL State: " + e.getSQLState());
-                System.err.println("Error Code: " + e.getErrorCode());
-                
-                if (e.getErrorCode() == 1451) {
-                    showWarning("Không thể xóa", "Nhà cung cấp đang được sử dụng trong hệ thống, không thể xóa");
-                } else {
-                    showError("Lỗi cơ sở dữ liệu", "Không thể xóa nhà cung cấp: " + e.getMessage());
-                }
+                DatabaseExceptionHandler.handleSQLException(e, "xóa nhà cung cấp");
             } catch (RuntimeException e) {
                 System.err.println("RuntimeException khi xóa nhà cung cấp: " + e.getMessage());
-                showError("Lỗi hệ thống", "Không thể kết nối cơ sở dữ liệu");
+                AlertUtils.showDatabaseError("Không thể kết nối cơ sở dữ liệu");
             }
         }
     }
@@ -288,11 +258,11 @@ public class SupplierController implements Initializable {
     @FXML
     private void handleViewDetails() {
         if (selectedSupplier == null) {
-            showWarning("Cảnh báo", "Vui lòng chọn nhà cung cấp để xem chi tiết");
+            AlertUtils.showWarning("Cảnh báo", "Vui lòng chọn nhà cung cấp để xem chi tiết");
             return;
         }
         
-        showInfo("Chi tiết nhà cung cấp", 
+        AlertUtils.showInfo("Chi tiết nhà cung cấp", 
             "Tên: " + selectedSupplier.getName() + "\n" +
             "SĐT: " + selectedSupplier.getPhone() + "\n" +
             "Email: " + selectedSupplier.getEmail() + "\n" +
@@ -301,38 +271,6 @@ public class SupplierController implements Initializable {
 
     @FXML
     private void handleExportExcel() {
-        showInfo("Xuất Excel", "Chức năng xuất Excel sẽ được phát triển sau");
-    }
-
-    private void showInfo(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showWarning(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private Optional<ButtonType> showConfirmation(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        return alert.showAndWait();
+        AlertUtils.showInfo("Xuất Excel", "Chức năng xuất Excel sẽ được phát triển sau");
     }
 } 

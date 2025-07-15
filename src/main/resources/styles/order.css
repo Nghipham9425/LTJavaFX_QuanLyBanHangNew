@@ -1,0 +1,54 @@
+/*
+ * Empty Stylesheet file.
+ */
+
+/* Bảng đơn hàng */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5px;
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+}
+
+.table-view .column-header {
+    -fx-background-color: #f2f2f2;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-padding: 6px 0;
+}
+
+.table-view .table-row-cell {
+    -fx-border-color: #e0e0e0;
+    -fx-cell-size: 35px;
+}
+
+.table-view .table-row-cell:filled:selected {
+    -fx-background-color: #d0e7ff;
+}
+
+/* Ô tìm kiếm và lọc */
+#searchField, #statusFilter {
+    -fx-background-color: #fff;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5;
+    -fx-padding: 6 10;
+    -fx-font-size: 14px;
+}
+
+/* Nút chức năng */
+.button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-padding: 6 16;
+}
+
+.button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.button:pressed {
+    -fx-background-color: #2471a3;
+}

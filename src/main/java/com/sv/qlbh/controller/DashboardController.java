@@ -2,9 +2,6 @@ package com.sv.qlbh.controller;
 
 import com.sv.qlbh.models.User;
 import com.sv.qlbh.utils.SessionManager;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.application.HostServices;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,6 +12,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable {
     
@@ -28,7 +29,6 @@ public class DashboardController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Hiển thị thông tin user đã đăng nhập
         User currentUser = SessionManager.getCurrentUser();
         if (currentUser != null) {
             String roleName = getRoleName(currentUser.getRole());
@@ -37,26 +37,21 @@ public class DashboardController implements Initializable {
             welcomeLabel.setText("Chào mừng đến với hệ thống bán hàng");
         }
         
-        // Load default home content
         loadHomeContent();
-        
         System.out.println("Dashboard loaded successfully!");
     }
     
     private void loadHomeContent() {
-        // Tạo nội dung dashboard mặc định
         createDefaultDashboardContent();
     }
     
     private void createDefaultDashboardContent() {
         contentArea.getChildren().clear();
         
-        // Tạo nội dung dashboard mặc định bằng code JavaFX
         try {
             javafx.scene.layout.VBox mainContainer = new javafx.scene.layout.VBox(20);
             mainContainer.setPadding(new javafx.geometry.Insets(20));
             
-            // Tạo 4 stat cards
             javafx.scene.layout.HBox statsRow = new javafx.scene.layout.HBox(18);
             statsRow.setAlignment(javafx.geometry.Pos.CENTER);
             
@@ -67,7 +62,6 @@ public class DashboardController implements Initializable {
                 createStatCard("Doanh thu hôm nay", "₫ 12,500,000", "stat-card stat-purple")
             );
             
-            // Tạo info blocks
             javafx.scene.layout.HBox infoRow1 = new javafx.scene.layout.HBox(18);
             infoRow1.setAlignment(javafx.geometry.Pos.CENTER);
             infoRow1.getChildren().addAll(
@@ -82,7 +76,6 @@ public class DashboardController implements Initializable {
                 createInfoCard("Hoạt động gần đây", "Đơn hàng mới #1234\nNhập kho 50 sản phẩm", 400, 120)
             );
             
-            // Tạo quick tools
             javafx.scene.layout.HBox toolsRow = new javafx.scene.layout.HBox(18);
             toolsRow.setAlignment(javafx.geometry.Pos.CENTER);
             toolsRow.getStyleClass().add("quick-tools");
@@ -98,7 +91,6 @@ public class DashboardController implements Initializable {
             contentArea.getChildren().add(mainContainer);
             
         } catch (RuntimeException e) {
-            // Fallback: tạo nội dung đơn giản
             javafx.scene.control.Label welcomeMsg = new javafx.scene.control.Label("Chào mừng đến với Dashboard!");
             welcomeMsg.setStyle("-fx-font-size: 18px; -fx-text-fill: #666; -fx-padding: 20px;");
             contentArea.getChildren().add(welcomeMsg);
@@ -150,8 +142,6 @@ public class DashboardController implements Initializable {
         return button;
     }
     
-
-    
     public void setHostServices(HostServices hostServices) {
         this.hostServices = hostServices;
     }
@@ -161,13 +151,12 @@ public class DashboardController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Node content = loader.load();
             
-                         // If loading POS, inject HostServices
-             if (fxmlPath.equals("/fxml/POS.fxml")) {
-                 com.sv.qlbh.controller.POSController posController = loader.getController();
-                 if (posController != null && hostServices != null) {
-                     posController.setHostServices(hostServices);
-                 }
-             }
+            if (fxmlPath.equals("/fxml/POS.fxml")) {
+                com.sv.qlbh.controller.POSController posController = loader.getController();
+                if (posController != null && hostServices != null) {
+                    posController.setHostServices(hostServices);
+                }
+            }
             
             contentArea.getChildren().clear();
             contentArea.getChildren().add(content);
@@ -193,10 +182,8 @@ public class DashboardController implements Initializable {
         }
     }
     
-    // Xử lý sự kiện cho các nút
     @FXML
     private void handleCreateOrder() {
-        // Chuyển đến màn hình bán hàng
         welcomeLabel.setText("💰 Bán Hàng - POS");
         loadContent("/fxml/Sales.fxml");
     }
@@ -216,10 +203,8 @@ public class DashboardController implements Initializable {
         // TODO: Xử lý tạo báo cáo
     }
     
-    // Navigation handlers
     @FXML
     private void handleHomeManagement(javafx.scene.input.MouseEvent event) {
-        // Reset welcome message
         User currentUser = SessionManager.getCurrentUser();
         if (currentUser != null) {
             String roleName = getRoleName(currentUser.getRole());
@@ -255,8 +240,7 @@ public class DashboardController implements Initializable {
     @FXML
     private void handleOrderManagement(javafx.scene.input.MouseEvent event) {
         welcomeLabel.setText("Quản lý đơn hàng");
-        // TODO: Load Order.fxml
-        System.out.println("Order Management clicked");
+        loadContent("/fxml/Order.fxml");
         updateActiveMenuItem(event);
     }
     
@@ -277,7 +261,6 @@ public class DashboardController implements Initializable {
     @FXML
     private void handleReportManagement(javafx.scene.input.MouseEvent event) {
         welcomeLabel.setText("Báo cáo");
-        // TODO: Tạo Report.fxml
         System.out.println("Report Management clicked");
         updateActiveMenuItem(event);
     }
@@ -285,19 +268,16 @@ public class DashboardController implements Initializable {
     @FXML
     private void handleSettingsManagement(javafx.scene.input.MouseEvent event) {
         welcomeLabel.setText("Cài đặt hệ thống");
-        // TODO: Tạo Settings.fxml
         System.out.println("Settings Management clicked");
         updateActiveMenuItem(event);
     }
     
     private void updateActiveMenuItem(javafx.scene.input.MouseEvent event) {
-        // Remove active class from all menu items
         Node sidebar = ((Node) event.getSource()).getParent().getParent();
         sidebar.lookupAll(".menu-item").forEach(node -> {
             node.getStyleClass().remove("active");
         });
         
-        // Add active class to clicked item
         Node clickedItem = (Node) event.getSource();
         clickedItem.getStyleClass().add("active");
     }
@@ -305,21 +285,17 @@ public class DashboardController implements Initializable {
     @FXML
     private void handleLogout(javafx.scene.input.MouseEvent event) {
         try {
-            // Xóa thông tin user đã đăng nhập
             SessionManager.logout();
             
-            // Chuyển về màn hình login
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
             
-            // Lấy stage hiện tại và thay đổi scene
             Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
             stage.setScene(scene);
             stage.setTitle("Đăng nhập - Quản Lý Bán Hàng");
             stage.setResizable(false);
             
-            // Đặt lại kích thước cho màn hình login
             stage.setWidth(700);
             stage.setHeight(400);
             stage.setMinWidth(700);

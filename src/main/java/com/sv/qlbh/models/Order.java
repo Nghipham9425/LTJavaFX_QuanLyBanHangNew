@@ -21,6 +21,7 @@ public class Order {
     private String status;
     private String note;
     private LocalDateTime createdAt;
+    private String customerName; // For display purposes
 
     public Order() {
     }
@@ -116,6 +117,14 @@ public class Order {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
     
 }

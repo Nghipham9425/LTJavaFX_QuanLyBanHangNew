@@ -178,6 +178,47 @@ public class OrderDAO {
     }
     
     /**
+     * Lấy tất cả đơn hàng
+     */
+    public List<Order> getAllOrders() throws SQLException {
+        String sql = "SELECT o.*, c.name as customer_name FROM orders o " +
+                    "LEFT JOIN customers c ON o.customer_id = c.id " +
+                    "ORDER BY o.created_at DESC";
+        List<Order> orders = new ArrayList<>();
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Order order = mapResultSetToOrder(rs);
+                    // Set customer name if available
+                    String customerName = rs.getString("customer_name");
+                    if (customerName != null) {
+                        order.setCustomerName(customerName);
+                    }
+                    orders.add(order);
+                }
+            }
+        }
+        return orders;
+    }
+
+    /**
+     * Hủy đơn hàng (chỉ cho phép với đơn hàng PROCESSING)
+     */
+    public boolean cancelOrder(int orderId) throws SQLException {
+        String sql = "UPDATE orders SET status = 'CANCELLED' WHERE id = ? AND status = 'PROCESSING'";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, orderId);
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    /**
      * Thống kê đơn hàng theo trạng thái
      */
     public int countOrdersByStatus(String status) throws SQLException {

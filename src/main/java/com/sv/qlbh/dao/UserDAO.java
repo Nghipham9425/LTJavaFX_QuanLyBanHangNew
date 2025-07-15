@@ -16,7 +16,9 @@ public interface UserDAO {
     
     boolean update(User user) throws SQLException;
     
-    boolean delete(User user) throws SQLException;
+    boolean deactivate(User user) throws SQLException;
+    
+    boolean activate(User user) throws SQLException;
     
     User getById(int id) throws SQLException;
     

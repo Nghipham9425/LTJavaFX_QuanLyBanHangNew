@@ -117,7 +117,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 
     @Override
     public boolean insert(Customer customer) {
-        String sql = "INSERT INTO customers (name, phone, email, group_id, points, total_spent, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO customers (name, phone, email, points, total_spent, status) VALUES (?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -125,10 +125,9 @@ public class CustomerDAOImpl implements CustomerDAO {
             stmt.setString(1, customer.getName());
             stmt.setString(2, customer.getPhone());
             stmt.setString(3, customer.getEmail());
-            stmt.setInt(4, customer.getGroupId());
-            stmt.setInt(5, customer.getPoints());
-            stmt.setDouble(6, customer.getTotalSpent());
-            stmt.setBoolean(7, customer.isStatus());
+            stmt.setInt(4, customer.getPoints());
+            stmt.setDouble(5, customer.getTotalSpent());
+            stmt.setBoolean(6, customer.isStatus());
             
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -143,11 +142,8 @@ public class CustomerDAOImpl implements CustomerDAO {
             System.err.println("SQL State: " + e.getSQLState());
             System.err.println("Error Code: " + e.getErrorCode());
             
-            // Kiểm tra các lỗi thường gặp
-            if (e.getErrorCode() == 1062) { // MySQL trùng dữ liệu
+            if (e.getErrorCode() == 1062) {
                 System.err.println("Số điện thoại có thể đã tồn tại trong hệ thống");
-            } else if (e.getErrorCode() == 1452) { // Lỗi khóa ngoại
-                System.err.println("Mã nhóm khách hàng không hợp lệ");
             }
             
             e.printStackTrace();
@@ -157,7 +153,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 
     @Override
     public boolean update(Customer customer) {
-        String sql = "UPDATE customers SET name = ?, phone = ?, email = ?, group_id = ?, points = ?, total_spent = ?, status = ? WHERE id = ?";
+        String sql = "UPDATE customers SET name = ?, phone = ?, email = ?, points = ?, total_spent = ?, status = ? WHERE id = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -165,11 +161,10 @@ public class CustomerDAOImpl implements CustomerDAO {
             stmt.setString(1, customer.getName());
             stmt.setString(2, customer.getPhone());
             stmt.setString(3, customer.getEmail());
-            stmt.setInt(4, customer.getGroupId());
-            stmt.setInt(5, customer.getPoints());
-            stmt.setDouble(6, customer.getTotalSpent());
-            stmt.setBoolean(7, customer.isStatus());
-            stmt.setInt(8, customer.getId());
+            stmt.setInt(4, customer.getPoints());
+            stmt.setDouble(5, customer.getTotalSpent());
+            stmt.setBoolean(6, customer.isStatus());
+            stmt.setInt(7, customer.getId());
             
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -184,12 +179,9 @@ public class CustomerDAOImpl implements CustomerDAO {
             System.err.println("SQL State: " + e.getSQLState());
             System.err.println("Error Code: " + e.getErrorCode());
             
-            // Kiểm tra các lỗi thường gặp
-            if (e.getErrorCode() == 1062) { // MySQL trùng dữ liệu
+            if (e.getErrorCode() == 1062) {
                 System.err.println("Số điện thoại có thể đã tồn tại trong hệ thống");
-            } else if (e.getErrorCode() == 1452) { // Lỗi khóa ngoại
-                System.err.println("Mã nhóm khách hàng không hợp lệ");
-            } else if (e.getErrorCode() == 1054) { // Lỗi cột không tồn tại
+            } else if (e.getErrorCode() == 1054) {
                 System.err.println("Cột trong database không tồn tại");
             }
             
@@ -199,7 +191,7 @@ public class CustomerDAOImpl implements CustomerDAO {
     }
 
     @Override
-    public boolean delete(int id) {
+    public boolean deactivate(int id) {
         String sql = "UPDATE customers SET status = false WHERE id = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
@@ -216,6 +208,30 @@ public class CustomerDAOImpl implements CustomerDAO {
             }
         } catch (SQLException e) {
             System.err.println("Lỗi khi vô hiệu hóa khách hàng ID " + id + ": " + e.getMessage());
+            System.err.println("SQL State: " + e.getSQLState());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean activate(int id) {
+        String sql = "UPDATE customers SET status = true WHERE id = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1, id);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Kích hoạt khách hàng thành công ID: " + id);
+                return true;
+            } else {
+                System.out.println("Không tìm thấy khách hàng để kích hoạt ID: " + id);
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi kích hoạt khách hàng ID " + id + ": " + e.getMessage());
             System.err.println("SQL State: " + e.getSQLState());
             e.printStackTrace();
             return false;
@@ -332,7 +348,6 @@ public class CustomerDAOImpl implements CustomerDAO {
             customer.setName(rs.getString("name"));
             customer.setPhone(rs.getString("phone"));
             customer.setEmail(rs.getString("email"));
-            customer.setGroupId(rs.getInt("group_id"));
             customer.setPoints(rs.getInt("points"));
             customer.setTotalSpent(rs.getDouble("total_spent"));
             customer.setStatus(rs.getBoolean("status"));
@@ -340,7 +355,7 @@ public class CustomerDAOImpl implements CustomerDAO {
         } catch (SQLException e) {
             System.err.println("Lỗi khi chuyển đổi dữ liệu Customer: " + e.getMessage());
             System.err.println("Có thể cột không tồn tại trong database");
-            throw e; // Ném lại lỗi để method gọi biết có vấn đề
+            throw e;
         }
     }
 }

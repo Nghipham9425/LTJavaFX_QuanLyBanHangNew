@@ -17,7 +17,8 @@ public interface CustomerDAO {
     Customer getByPhone(String phone);
     boolean insert(Customer customer);
     boolean update(Customer customer);
-    boolean delete(int id);
+    boolean deactivate(int id);
+    boolean activate(int id);
     List<Customer> searchByName(String name);
     List<Customer> getByGroupId(int groupId);
     boolean updatePoints(int customerId, int points);

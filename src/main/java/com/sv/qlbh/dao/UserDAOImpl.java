@@ -61,12 +61,40 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean delete(User user) throws SQLException {
-        String sql = "DELETE FROM users WHERE id=?";
+    public boolean deactivate(User user) throws SQLException {
+        String sql = "UPDATE users SET status = false WHERE id=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, user.getId());
             int row = ps.executeUpdate();
-            return row > 0;
+            if (row > 0) {
+                System.out.println("Vô hiệu hóa user thành công: " + user.getUsername());
+                return true;
+            } else {
+                System.out.println("Không tìm thấy user để vô hiệu hóa ID: " + user.getId());
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi vô hiệu hóa user ID " + user.getId() + ": " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    public boolean activate(User user) throws SQLException {
+        String sql = "UPDATE users SET status = true WHERE id=?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, user.getId());
+            int row = ps.executeUpdate();
+            if (row > 0) {
+                System.out.println("Kích hoạt user thành công: " + user.getUsername());
+                return true;
+            } else {
+                System.out.println("Không tìm thấy user để kích hoạt ID: " + user.getId());
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi kích hoạt user ID " + user.getId() + ": " + e.getMessage());
+            throw e;
         }
     }
 
