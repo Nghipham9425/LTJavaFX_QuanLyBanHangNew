@@ -48,7 +48,6 @@ public class VNPayService {
             
             // Tạo hash 
             String signValue = VNPayConfig.hashAllFields(vnpParams);
-            System.out.println("DEBUG Our calculated hash: " + signValue);
             vnpParams.put("vnp_SecureHash", signValue);
             // vnpParams.put("vnp_SecureHashType", "SHA512"); // Remove this - may cause conflict
             
@@ -73,9 +72,6 @@ public class VNPayService {
             }
             
             String finalUrl = VNPayConfig.VNP_PAY_URL + "?" + query.toString();
-            System.out.println("DEBUG Final VNPay URL: " + finalUrl);
-            System.out.println("DEBUG Return URL used: " + VNPayConfig.getReturnUrl());
-            System.out.println("DEBUG Active port: " + com.sv.qlbh.utils.VNPayReturnHandler.getActivePort());
             return finalUrl;
             
         } catch (UnsupportedEncodingException e) {

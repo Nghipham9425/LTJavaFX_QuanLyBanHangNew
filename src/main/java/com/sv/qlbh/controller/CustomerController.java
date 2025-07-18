@@ -178,7 +178,6 @@ public class CustomerController implements Initializable {
         return customer;
     }
 
-    // ================== EVENT HANDLERS ==================
 
     @FXML
     private void handleSearch() {

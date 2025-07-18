@@ -13,7 +13,7 @@ public class SupplierDAOImpl implements SupplierDAO {
     
     @Override
     public boolean add(Supplier supplier) throws SQLException {
-        // FIX: Bỏ contact_person để match với database schema
+     
         String sql = "INSERT INTO suppliers (name, phone, email, address, status) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -22,17 +22,11 @@ public class SupplierDAOImpl implements SupplierDAO {
             stmt.setString(2, supplier.getPhone());
             stmt.setString(3, supplier.getEmail());
             stmt.setString(4, supplier.getAddress());
-            // FIX: Bỏ contact_person parameter
+  
             stmt.setBoolean(5, supplier.isStatus()); // Đổi từ index 6 thành 5
             
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Thêm nhà cung cấp thành công: " + supplier.getName());
-                return true;
-            } else {
-                System.out.println("Không có dòng nào bị ảnh hưởng khi thêm nhà cung cấp: " + supplier.getName());
-                return false;
-            }
+            return rowsAffected > 0;
         } catch (SQLException e) {
             System.err.println("Lỗi khi thêm nhà cung cấp '" + supplier.getName() + "': " + e.getMessage());
             System.err.println("SQL State: " + e.getSQLState());
@@ -48,7 +42,7 @@ public class SupplierDAOImpl implements SupplierDAO {
     
     @Override
     public boolean update(Supplier supplier) throws SQLException {
-        // FIX: Bỏ contact_person khỏi UPDATE
+
         String sql = "UPDATE suppliers SET name=?, phone=?, email=?, address=?, status=? WHERE id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -57,9 +51,9 @@ public class SupplierDAOImpl implements SupplierDAO {
             stmt.setString(2, supplier.getPhone());
             stmt.setString(3, supplier.getEmail());
             stmt.setString(4, supplier.getAddress());
-            // FIX: Bỏ contact_person parameter
-            stmt.setBoolean(5, supplier.isStatus()); // Đổi từ index 6 thành 5
-            stmt.setInt(6, supplier.getId()); // Đổi từ index 7 thành 6
+
+            stmt.setBoolean(5, supplier.isStatus());
+            stmt.setInt(6, supplier.getId()); 
             
             return stmt.executeUpdate() > 0;
         }

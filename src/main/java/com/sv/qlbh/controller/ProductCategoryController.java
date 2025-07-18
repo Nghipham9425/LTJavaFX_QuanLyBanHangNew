@@ -579,7 +579,7 @@ public class ProductCategoryController implements Initializable {
                     }
                 } else {
                     AlertUtils.showError("Lỗi xóa sản phẩm", "Không thể xóa: " + e.getMessage());
-                }
+            }
             }
         }
     }

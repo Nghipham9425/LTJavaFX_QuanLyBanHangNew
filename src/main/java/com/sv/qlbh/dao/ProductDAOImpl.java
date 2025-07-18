@@ -31,13 +31,7 @@ public class ProductDAOImpl implements ProductDAO {
             stmt.setBoolean(8, product.isStatus());
             
             int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Thêm sản phẩm thành công: " + product.getName());
-                return true;
-            } else {
-                System.out.println("Không có dòng nào bị ảnh hưởng khi thêm sản phẩm: " + product.getName());
-                return false;
-            }
+            return rowsAffected > 0;
         } catch (SQLException e) {
             System.err.println("Lỗi khi thêm sản phẩm '" + product.getName() + "': " + e.getMessage());
             System.err.println("SQL State: " + e.getSQLState());
@@ -112,7 +106,6 @@ public class ProductDAOImpl implements ProductDAO {
             while (rs.next()) {
                 products.add(mapResultSetToProduct(rs));
             }
-            System.out.println("Đã tải thành công " + products.size() + " sản phẩm");
         } catch (SQLException e) {
             System.err.println("Lỗi khi lấy danh sách sản phẩm: " + e.getMessage());
             System.err.println("SQL State: " + e.getSQLState());

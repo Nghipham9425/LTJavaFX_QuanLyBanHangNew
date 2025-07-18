@@ -75,6 +75,7 @@ CREATE TABLE orders (
     id INT PRIMARY KEY AUTO_INCREMENT,
     customer_id INT,
     user_id INT NOT NULL,
+    promotion_id INT,
     total_amount DECIMAL(15,2) NOT NULL,
     discount_amount DECIMAL(15,2) DEFAULT 0,
     final_amount DECIMAL(15,2) NOT NULL,
@@ -83,7 +84,8 @@ CREATE TABLE orders (
     note TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (promotion_id) REFERENCES promotions(id)
 );
 
 -- Bảng order_details
@@ -121,6 +123,13 @@ CREATE TABLE shifts (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+CREATE TABLE promotion_category (
+    promotion_id INT NOT NULL,
+    category_id INT NOT NULL,
+    PRIMARY KEY (promotion_id, category_id),
+    FOREIGN KEY (promotion_id) REFERENCES promotions(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+);
 
 -- INDEX cho performance
 CREATE INDEX idx_customers_phone ON customers(phone);
@@ -131,6 +140,7 @@ CREATE INDEX idx_products_supplier_id ON products(supplier_id);
 CREATE INDEX idx_orders_payment_method ON orders(payment_method);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_created_at ON orders(created_at);
+CREATE INDEX idx_orders_promotion_id ON orders(promotion_id);
 CREATE INDEX idx_order_details_order_id ON order_details(order_id);
 CREATE INDEX idx_order_details_product_id ON order_details(product_id);
 CREATE INDEX idx_inventory_product_id ON inventory(product_id);
@@ -213,4 +223,4 @@ INSERT INTO promotions (name, discount_type, discount_value, start_date, end_dat
 -- Sample orders for testing
 INSERT INTO orders (customer_id, user_id, total_amount, discount_amount, final_amount, payment_method, status, note) VALUES
 (1, 1, 100000, 0, 100000, 'CASH', 'COMPLETED', 'Test order 1'),
-(2, 1, 200000, 20000, 180000, 'VNPAY', 'PROCESSING', 'Test VNPay order');
+(2, 1, 200000, 20000, 180000, 'VNPAY', 'PROCESSING', 'Test VNPay order'); 

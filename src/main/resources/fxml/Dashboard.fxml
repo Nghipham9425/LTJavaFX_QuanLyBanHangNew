@@ -95,7 +95,15 @@
                 </ImageView>
                 <Label text="Bán hàng" />
             </HBox>
-            
+             <!-- Usser -->
+            <HBox alignment="CENTER_LEFT" onMouseClicked="#handleUserManagement" spacing="10" styleClass="menu-item">
+                <ImageView fitHeight="20" fitWidth="20">
+                    <image>
+                        <Image url="@../images/icon_user.png" />
+                    </image>
+                </ImageView>
+                <Label text="Quản lý người dùng" />
+            </HBox>
             <!-- Báo cáo -->
             <HBox alignment="CENTER_LEFT" onMouseClicked="#handleReportManagement" spacing="10" styleClass="menu-item">
                 <ImageView fitHeight="20" fitWidth="20">

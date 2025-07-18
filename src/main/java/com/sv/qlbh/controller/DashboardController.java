@@ -264,6 +264,12 @@ public class DashboardController implements Initializable {
         System.out.println("Report Management clicked");
         updateActiveMenuItem(event);
     }
+    @FXML
+    private void handleUserManagement(javafx.scene.input.MouseEvent event) {
+        welcomeLabel.setText("Quản lý người dùng");
+        loadContent("/fxml/UserManagement.fxml");
+        updateActiveMenuItem(event);
+    }
     
     @FXML
     private void handleSettingsManagement(javafx.scene.input.MouseEvent event) {

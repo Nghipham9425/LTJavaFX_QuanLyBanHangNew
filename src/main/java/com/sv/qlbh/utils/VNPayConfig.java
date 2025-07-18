@@ -110,9 +110,7 @@ public class VNPayConfig {
         }
         
         String queryString = hashData.toString();
-        System.out.println("DEBUG Hash input: " + queryString);
         String hash = hmacSHA512(SECRET_KEY, queryString);
-        System.out.println("DEBUG Generated hash: " + hash);
         return hash;
     }
     

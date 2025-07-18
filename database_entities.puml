@@ -1,0 +1,186 @@
+@startuml Database Entities
+!theme plain
+
+' Database Entities
+class User {
+    - id: int
+    - username: String
+    - password: String
+    - fullName: String
+    - role: String
+    - status: boolean
+    --
+    + getId(): int
+    + setId(int): void
+    + getUsername(): String
+    + setUsername(String): void
+    + getPassword(): String
+    + setPassword(String): void
+    + getFullName(): String
+    + setFullName(String): void
+    + getRole(): String
+    + setRole(String): void
+    + isStatus(): boolean
+    + setStatus(boolean): void
+}
+
+class Customer {
+    - id: int
+    - name: String
+    - phone: String
+    - email: String
+    - points: int
+    - totalSpent: double
+    - status: boolean
+    - createdAt: LocalDateTime
+    - updatedAt: LocalDateTime
+    --
+    + getId(): int
+    + setId(int): void
+    + getName(): String
+    + setName(String): void
+    + getPhone(): String
+    + setPhone(String): void
+    + getEmail(): String
+    + setEmail(String): void
+    + getPoints(): int
+    + setPoints(int): void
+    + getTotalSpent(): double
+    + setTotalSpent(double): void
+    + isStatus(): boolean
+    + setStatus(boolean): void
+    + getGroupDisplayName(): String
+}
+
+class Category {
+    - id: int
+    - name: String
+    - description: String
+    --
+    + getId(): int
+    + getName(): String
+    + getDescription(): String
+    + setters...
+}
+
+class Supplier {
+    - id: int
+    - name: String
+    - phone: String
+    - email: String
+    - address: String
+    - status: boolean
+    --
+    + getId(): int
+    + getName(): String
+    + getters/setters...
+}
+
+class Product {
+    - id: int
+    - name: String
+    - categoryId: int
+    - supplierId: int
+    - barcode: String
+    - price: double
+    - costPrice: double
+    - stock: int
+    - status: boolean
+    --
+    + getId(): int
+    + getName(): String
+    + getPrice(): double
+    + getters/setters...
+}
+
+class Order {
+    - id: int
+    - customerId: Integer
+    - userId: int
+    - promotionId: Integer
+    - totalAmount: double
+    - discountAmount: double
+    - finalAmount: double
+    - paymentMethod: String
+    - status: String
+    - note: String
+    - createdAt: LocalDateTime
+    --
+    + getId(): int
+    + getCustomerId(): Integer
+    + getTotalAmount(): double
+    + getters/setters...
+}
+
+class OrderDetail {
+    - id: int
+    - orderId: int
+    - productId: int
+    - quantity: int
+    - price: double
+    - discountAmount: double
+    --
+    + getId(): int
+    + getOrderId(): int
+    + getQuantity(): int
+    + getters/setters...
+}
+
+class Inventory {
+    - id: int
+    - productId: int
+    - quantity: int
+    - type: String
+    - referenceId: Integer
+    - referenceType: String
+    - note: String
+    - createdAt: LocalDateTime
+    --
+    + getId(): int
+    + getProductId(): int
+    + getters/setters...
+}
+
+class Promotion {
+    - id: int
+    - name: String
+    - discountType: String
+    - discountValue: double
+    - startDate: LocalDateTime
+    - endDate: LocalDateTime
+    - status: boolean
+    --
+    + getId(): int
+    + getName(): String
+    + getters/setters...
+}
+
+class Shift {
+    - id: int
+    - userId: int
+    - startTime: LocalDateTime
+    - endTime: LocalDateTime
+    - status: String
+    - createdAt: LocalDateTime
+    --
+    + getId(): int
+    + getUserId(): int
+    + getters/setters...
+}
+
+' Relationships
+Customer ||--o{ Order : "1..n"
+User ||--o{ Order : "creates"
+User ||--o{ Shift : "works"
+Promotion ||--o{ Order : "applied to"
+Order ||--o{ OrderDetail : "1..n"
+Product ||--o{ OrderDetail : "included in"
+Product }o--|| Category : "belongs to"
+Product }o--|| Supplier : "supplied by"
+Product ||--o{ Inventory : "tracked in"
+
+note right of Order : "customer_id can be NULL\nfor walk-in customers"
+
+note right of Inventory : "reference_id links to\norder_id for sales\nor purchase_id for imports"
+
+@enduml 

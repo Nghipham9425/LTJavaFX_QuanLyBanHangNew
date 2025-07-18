@@ -14,6 +14,7 @@ public class Order {
     private int id;
     private Integer customerId;
     private int userId;
+    private Integer promotionId;
     private double totalAmount;
     private double discountAmount;
     private double finalAmount;
@@ -61,6 +62,14 @@ public class Order {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public Integer getPromotionId() {
+        return promotionId;
+    }
+
+    public void setPromotionId(Integer promotionId) {
+        this.promotionId = promotionId;
     }
 
     public double getTotalAmount() {

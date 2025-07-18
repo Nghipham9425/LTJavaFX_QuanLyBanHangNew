@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Triển khai CustomerDAO - Quản lý dữ liệu khách hàng
  * @author nghip
  */
 public class CustomerDAOImpl implements CustomerDAO {

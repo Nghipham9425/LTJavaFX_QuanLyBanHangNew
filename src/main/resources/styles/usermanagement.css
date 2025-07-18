@@ -1,0 +1,102 @@
+/* User Management Styles */
+
+.section-title {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #34495e;
+}
+
+.search-bar {
+  -fx-padding: 10px 0 10px 0;
+}
+
+.search-label {
+  -fx-font-size: 13px;
+  -fx-text-fill: #495057;
+}
+
+.search-field {
+  -fx-pref-width: 250px;
+  -fx-padding: 8px 12px;
+  -fx-background-radius: 6px;
+  -fx-border-color: #ddd;
+  -fx-border-radius: 6px;
+}
+
+.data-table {
+  -fx-background-color: #ffffff;
+  -fx-border-color: #dee2e6;
+  -fx-border-radius: 8px;
+  -fx-background-radius: 8px;
+}
+
+.data-table .column-header {
+  -fx-background-color: #67b8e7;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-padding: 10px;
+}
+
+.data-table .table-row-cell:selected {
+  -fx-background-color: #007bff;
+  -fx-text-fill: white;
+}
+
+.form-card {
+  -fx-background-color: #ffffff;
+  -fx-padding: 20px;
+  -fx-background-radius: 8px;
+  -fx-border-color: #dee2e6;
+  -fx-border-radius: 8px;
+  -fx-border-width: 1px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}
+
+.form-title {
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #495057;
+}
+
+.form-field {
+  -fx-padding: 8px 12px;
+  -fx-background-radius: 6px;
+  -fx-border-color: #ddd;
+  -fx-border-radius: 6px;
+}
+
+.form-checkbox {
+  -fx-padding: 8px 0 8px 0;
+}
+
+.action-btn.primary {
+  -fx-background-color: #007bff;
+  -fx-text-fill: white;
+  -fx-padding: 8px 16px;
+  -fx-background-radius: 6px;
+  -fx-font-weight: 500;
+}
+.action-btn.primary:hover {
+  -fx-background-color: #0056b3;
+}
+.action-btn.secondary {
+  -fx-background-color: #6c757d;
+  -fx-text-fill: white;
+  -fx-padding: 8px 16px;
+  -fx-background-radius: 6px;
+  -fx-font-weight: 500;
+}
+.action-btn.danger {
+  -fx-background-color: #dc3545;
+  -fx-text-fill: white;
+  -fx-padding: 8px 16px;
+  -fx-background-radius: 6px;
+  -fx-font-weight: 500;
+}
+.action-btn.info {
+  -fx-background-color: #17a2b8;
+  -fx-text-fill: white;
+  -fx-padding: 8px 16px;
+  -fx-background-radius: 6px;
+  -fx-font-weight: 500;
+}

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.sv.qlbh.controller.UserManagementController"
+      spacing="18" stylesheets="@../styles/usermanagement.css" styleClass="content-area">
+    <!-- TIÊU ĐỀ -->
+    <Label text="Quản lý người dùng" styleClass="section-title"/>
+
+    <!-- THANH TÌM KIẾM -->
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="search-bar">
+        <TextField fx:id="txtSearch" promptText="Tìm kiếm tên hoặc vai trò..." styleClass="search-field"/>
+        <Button text="Tìm kiếm" onAction="#handleSearch" styleClass="search-btn"/>
+        <Button text="Làm mới" onAction="#handleRefresh" styleClass="refresh-btn"/>
+    </HBox>
+
+    <!-- BẢNG NGƯỜI DÙNG -->
+    <TableView fx:id="tableUser" prefHeight="260" styleClass="data-table">
+        <columns>
+            <TableColumn fx:id="colUsername" text="Tên đăng nhập" prefWidth="120"/>
+            <TableColumn fx:id="colFullName" text="Họ tên" prefWidth="150"/>
+            <TableColumn fx:id="colRole" text="Vai trò" prefWidth="100"/>
+            <TableColumn fx:id="colStatus" text="Trạng thái" prefWidth="80"/>
+        </columns>
+    </TableView>
+
+    <!-- FORM VÀ NÚT CHỨC NĂNG -->
+    <HBox spacing="20" alignment="TOP_LEFT">
+        <VBox spacing="10" styleClass="form-card" prefWidth="420">
+            <Label text="Thông tin người dùng" styleClass="form-title"/>
+            <TextField fx:id="txtUsername" promptText="Tên đăng nhập" styleClass="form-field"/>
+            <TextField fx:id="txtFullName" promptText="Họ tên" styleClass="form-field"/>
+            <PasswordField fx:id="txtPassword" promptText="Mật khẩu" styleClass="form-field"/>
+            <PasswordField fx:id="txtConfirmPassword" promptText="Xác nhận mật khẩu" styleClass="form-field"/>
+            <ComboBox fx:id="cbRole" promptText="Vai trò" styleClass="form-field"/>
+            <CheckBox fx:id="chkActive" text="Hoạt động" styleClass="form-checkbox"/>
+        </VBox>
+        <VBox spacing="12" alignment="TOP_CENTER">
+            <Button text="Thêm" onAction="#handleAddUser" styleClass="action-btn primary" prefWidth="120"/>
+            <Button text="Cập nhật" onAction="#handleUpdateUser" styleClass="action-btn secondary" prefWidth="120"/>
+            <!-- <Button text="Xóa" onAction="#handleDeleteUser" styleClass="action-btn danger" prefWidth="120"/> -->
+            <Button text="Hủy" onAction="#handleClearUser" styleClass="action-btn secondary" prefWidth="120"/>
+            <Button text="Đặt lại mật khẩu" onAction="#handleResetPassword" styleClass="action-btn info" prefWidth="120"/>
+        </VBox>
+    </HBox>
+
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+</VBox>
