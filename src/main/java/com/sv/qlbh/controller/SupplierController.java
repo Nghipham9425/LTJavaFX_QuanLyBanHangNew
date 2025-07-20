@@ -1,7 +1,7 @@
 package com.sv.qlbh.controller;
 
 import com.sv.qlbh.dao.SupplierDAO;
-import com.sv.qlbh.dao.SupplierDAOImpl;
+
 import com.sv.qlbh.models.Supplier;
 import com.sv.qlbh.utils.AlertUtils;
 import com.sv.qlbh.utils.ValidationUtils;
@@ -43,7 +43,7 @@ public class SupplierController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        supplierDAO = new SupplierDAOImpl();
+        supplierDAO = new SupplierDAO();
         supplierList = FXCollections.observableArrayList();
         
         setupTableColumns();

@@ -16,7 +16,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import com.sv.qlbh.dao.CustomerDAO;
-import com.sv.qlbh.dao.CustomerDAOImpl;
 
 /**
  * VNPay Return Handler for JavaFX Application
@@ -200,7 +199,7 @@ public class VNPayReturnHandler {
                     try {
                         Order order = orderDAO.getOrderById(orderId);
                         if (order != null && order.getCustomerId() != null && order.getCustomerId() > 0) {
-                            CustomerDAO customerDAO = new CustomerDAOImpl();
+                            CustomerDAO customerDAO = new CustomerDAO();
                             customerDAO.updateTotalSpent(order.getCustomerId(), order.getFinalAmount());
                             
                             int pointsToAdd = (int)(order.getFinalAmount() / 1000);

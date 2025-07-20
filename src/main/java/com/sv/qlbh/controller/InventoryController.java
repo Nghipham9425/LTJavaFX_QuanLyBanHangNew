@@ -2,9 +2,7 @@
 package com.sv.qlbh.controller;
 
 import com.sv.qlbh.dao.InventoryDAO;
-import com.sv.qlbh.dao.InventoryDAOImpl;
 import com.sv.qlbh.dao.ProductDAO;
-import com.sv.qlbh.dao.ProductDAOImpl;
 import com.sv.qlbh.models.Inventory;
 import com.sv.qlbh.models.Product;
 import javafx.collections.FXCollections;
@@ -55,8 +53,8 @@ public class InventoryController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Khởi tạo các đối tượng DAO
-        inventoryDAO = new InventoryDAOImpl();
-        productDAO = new ProductDAOImpl();
+        inventoryDAO = new InventoryDAO();
+        productDAO = new ProductDAO();
 
         // Khởi tạo ObservableList để chứa dữ liệu
         inventoryList = FXCollections.observableArrayList();

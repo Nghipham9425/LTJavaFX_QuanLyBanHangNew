@@ -1,7 +1,7 @@
 package com.sv.qlbh.controller;
 
 import com.sv.qlbh.dao.CustomerDAO;
-import com.sv.qlbh.dao.CustomerDAOImpl;
+
 import com.sv.qlbh.models.Customer;
 import com.sv.qlbh.utils.AlertUtils;
 import com.sv.qlbh.utils.ValidationUtils;
@@ -54,7 +54,7 @@ public class CustomerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        customerDAO = new CustomerDAOImpl();
+        customerDAO = new CustomerDAO();
         customerList = FXCollections.observableArrayList();
         
         setupTableColumns();

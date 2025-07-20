@@ -5,11 +5,8 @@
 package com.sv.qlbh.controller;
 
 import com.sv.qlbh.dao.CategoryDAO;
-import com.sv.qlbh.dao.CategoryDAOImpl;
 import com.sv.qlbh.dao.ProductDAO;
-import com.sv.qlbh.dao.ProductDAOImpl;
 import com.sv.qlbh.dao.SupplierDAO;
-import com.sv.qlbh.dao.SupplierDAOImpl;
 import com.sv.qlbh.models.Category;
 import com.sv.qlbh.models.Product;
 import com.sv.qlbh.models.Supplier;
@@ -89,9 +86,9 @@ public class ProductCategoryController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        categoryDAO = new CategoryDAOImpl();
-        productDAO = new ProductDAOImpl();
-        supplierDAO = new SupplierDAOImpl();
+        categoryDAO = new CategoryDAO();
+        productDAO = new ProductDAO();
+        supplierDAO = new SupplierDAO();
         
         categoryList = FXCollections.observableArrayList();
         productList = FXCollections.observableArrayList();

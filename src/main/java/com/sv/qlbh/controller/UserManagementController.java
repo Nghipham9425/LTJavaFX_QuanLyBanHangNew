@@ -8,7 +8,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
-import com.sv.qlbh.dao.UserDAOImpl;
+
 import com.sv.qlbh.dao.UserDAO;
 import com.sv.qlbh.models.User;
 import javafx.fxml.FXML;
@@ -48,7 +48,7 @@ public class UserManagementController implements Initializable {
     @FXML private PasswordField txtConfirmPassword;
 
 
-    private final UserDAO userDAO = new UserDAOImpl();
+    private final UserDAO userDAO = new UserDAO();
     private ObservableList<User> userList = FXCollections.observableArrayList();
 
     /**

@@ -66,11 +66,11 @@ public class POSController implements Initializable {
     private ObservableList<Customer> customerList = FXCollections.observableArrayList();
     
     // DAOs
-    private ProductDAO productDAO = new ProductDAOImpl();
-    private CustomerDAO customerDAO = new CustomerDAOImpl();
+    private ProductDAO productDAO = new ProductDAO();
+    private CustomerDAO customerDAO = new CustomerDAO();
     private OrderDAO orderDAO = new OrderDAO();
     private OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
-    private InventoryDAO inventoryDAO = new InventoryDAOImpl();
+    private InventoryDAO inventoryDAO = new InventoryDAO();
     
     // Other services
     private HostServices hostServices;

@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
 <VBox spacing="20" stylesheets="@../styles/pos.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sv.qlbh.controller.POSController">
     
@@ -21,14 +33,14 @@
             <Label styleClass="section-title" text="Danh Sách Sản Phẩm" />
             
             <!-- Search Bar -->
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <TextField fx:id="txtProductSearch" promptText="Tìm kiếm sản phẩm..." styleClass="search-field" prefWidth="250" />
-                <Button onAction="#handleSearch" styleClass="btn-primary" text="Tìm kiếm" />
-                <Button onAction="#handleRefresh" styleClass="btn-secondary" text="Làm mới" />
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <TextField fx:id="txtProductSearch" prefWidth="250" promptText="Tìm kiếm sản phẩm..." styleClass="search-field" />
+                <Button onAction="#handleSearch" prefHeight="32.0" prefWidth="115.0" styleClass="btn-primary" text="Tìm kiếm" />
+                <Button onAction="#handleRefresh" prefHeight="32.0" prefWidth="110.0" styleClass="btn-secondary" text="Làm mới" />
             </HBox>
             
             <!-- Products Table -->
-            <TableView fx:id="tblProducts" styleClass="data-table" VBox.vgrow="ALWAYS">
+            <TableView fx:id="tblProducts" prefHeight="670.0" prefWidth="475.0" styleClass="data-table" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="colProductName" prefWidth="200" text="Tên Sản Phẩm" />
                     <TableColumn fx:id="colProductPrice" prefWidth="100" text="Giá" />
@@ -40,13 +52,13 @@
         </VBox>
         
         <!-- RIGHT PANEL - Cart & Payment -->
-        <VBox spacing="15" styleClass="form-section" minWidth="450" maxWidth="450">
+        <VBox maxWidth="450" minWidth="450" spacing="15" styleClass="form-section">
             
             <!-- Cart Section -->
             <VBox spacing="10" styleClass="cart-section">
                 <Label styleClass="section-title" text="Giỏ Hàng" />
                 
-                <TableView fx:id="tblCart" editable="true" styleClass="cart-table" prefHeight="200">
+                <TableView fx:id="tblCart" editable="true" prefHeight="200" styleClass="cart-table">
                     <columns>
                         <TableColumn fx:id="colCartProduct" prefWidth="150" text="Sản Phẩm" />
                         <TableColumn fx:id="colCartQuantity" prefWidth="60" text="SL" />
@@ -55,7 +67,7 @@
                     </columns>
                 </TableView>
                 
-                <HBox spacing="10" alignment="CENTER_LEFT">
+                <HBox alignment="CENTER_LEFT" spacing="10">
                     <Button fx:id="btnRemoveItem" onAction="#removeFromCart" styleClass="btn-danger" text="Xóa Item" />
                     <Button fx:id="btnClearCart" onAction="#clearCart" styleClass="btn-secondary" text="Xóa Tất Cả" />
                 </HBox>
@@ -72,22 +84,28 @@
             <VBox spacing="10" styleClass="totals-section">
                 <Label styleClass="form-label" text="Tổng Cộng" />
                 
-                <GridPane hgap="10" vgap="5" styleClass="totals-grid">
+                <GridPane hgap="10" styleClass="totals-grid" vgap="5">
                     <columnConstraints>
                         <ColumnConstraints prefWidth="120" />
                         <ColumnConstraints />
                     </columnConstraints>
                     
-                    <Label text="Tạm tính:" styleClass="total-label" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                    <Label fx:id="lblSubtotal" text="0 VND" styleClass="total-value" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    <Label styleClass="total-label" text="Tạm tính:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <Label fx:id="lblSubtotal" styleClass="total-value" text="0 VND" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                     
-                    <Label text="Giảm giá:" styleClass="total-label" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                    <Label fx:id="lblDiscount" text="0 VND" styleClass="total-value" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <Label styleClass="total-label" text="Giảm giá:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <Label fx:id="lblDiscount" styleClass="total-value" text="0 VND" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                     
                     <Separator GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="2" />
                     
-                    <Label text="Tổng cộng:" styleClass="total-label final" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                    <Label fx:id="lblTotal" text="0 VND" styleClass="total-value final" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                    <Label styleClass="total-label final" text="Tổng cộng:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                    <Label fx:id="lblTotal" styleClass="total-value final" text="0 VND" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+               <rowConstraints>
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+                  <RowConstraints />
+               </rowConstraints>
                 </GridPane>
             </VBox>
             
@@ -96,8 +114,8 @@
                 <Label styleClass="form-label" text="Phương Thức Thanh Toán" />
                 
                 <VBox spacing="8">
-                    <RadioButton fx:id="rbCash" selected="true" text="💵 Tiền Mặt" styleClass="payment-option" />
-                    <RadioButton fx:id="rbVNPay" text="💳 VNPay (Chuyển khoản)" styleClass="payment-option" />
+                    <RadioButton fx:id="rbCash" selected="true" styleClass="payment-option" text="💵 Tiền Mặt" />
+                    <RadioButton fx:id="rbVNPay" styleClass="payment-option" text="💳 VNPay (Chuyển khoản)" />
                 </VBox>
             </VBox>
             
@@ -110,4 +128,4 @@
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
-</VBox> 
+</VBox>

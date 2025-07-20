@@ -5,7 +5,7 @@
 package com.sv.qlbh.controller;
 
 import com.sv.qlbh.dao.UserDAO;
-import com.sv.qlbh.dao.UserDAOImpl;
+
 import com.sv.qlbh.models.User;
 import com.sv.qlbh.utils.SessionManager;
 import java.io.IOException;
@@ -68,7 +68,7 @@ public class LoginController {
           new Thread(() -> {
               try {
                   // Gọi UserDAO để kiểm tra đăng nhập
-                  UserDAO userDAO = new UserDAOImpl();
+                  UserDAO userDAO = new UserDAO();
                   User user = userDAO.login(username, password);
                   
                   Platform.runLater(() -> {
