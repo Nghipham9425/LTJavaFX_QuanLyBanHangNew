@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.sv.qlbh.controller.BaoCaoController"
+      spacing="20" styleClass="content-area" stylesheets="@../styles/productcategory.css">
+
+    <!-- Thanh lọc dữ liệu -->
+    <HBox spacing="15" alignment="CENTER_LEFT" styleClass="search-bar">
+        <Label text="Loại báo cáo:" styleClass="search-label"/>
+        <ComboBox fx:id="cbxReportType" prefWidth="150" styleClass="filter-combo"/>
+
+        <Label text="Từ ngày:" styleClass="search-label"/>
+        <DatePicker fx:id="dpStartDate" styleClass="form-field"/>
+
+        <Label text="Đến ngày:" styleClass="search-label"/>
+        <DatePicker fx:id="dpEndDate" styleClass="form-field"/>
+
+        <Button text="Lọc" fx:id="btnFilter" onAction="#handleFilterReport" styleClass="search-btn"/>
+        <Button text="Xóa lọc" fx:id="btnClear" onAction="#handleClearFilter" styleClass="refresh-btn"/>
+    </HBox>
+
+    <!-- Bảng dữ liệu -->
+    <TableView fx:id="tblReport" prefHeight="500" styleClass="data-table">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+            <TableColumn fx:id="colName" text="Tên sản phẩm" prefWidth="150"/>
+            <TableColumn fx:id="colCategory" text="Loại giao dịch" prefWidth="120"/>
+            <TableColumn fx:id="colQuantity" text="Số lượng" prefWidth="100"/>
+            <TableColumn fx:id="colAmount" text="Thành tiền" prefWidth="150"/>
+            <TableColumn fx:id="colDate" text="Ngày" prefWidth="120"/>
+        </columns>
+    </TableView>
+<HBox spacing="10" alignment="CENTER_LEFT">
+    <Button text="Tính tổng doanh thu" onAction="#handleCalculateTotal" />
+    <Label fx:id="lblTotalAmount" text="Tổng doanh thu: 0₫"
+           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2b7a0b;" />
+</HBox>
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+</VBox>

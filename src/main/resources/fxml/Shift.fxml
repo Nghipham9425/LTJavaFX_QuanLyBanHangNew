@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sv.qlbh.controller.ShiftController" prefWidth="900" prefHeight="600">
+    <children>
+        <VBox spacing="10" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0">
+            <!-- Tiêu đề -->
+            <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: #2196F3;">
+                <children>
+                    <Label text="Quản lý ca làm việc" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+                </children>
+                <padding>
+                    <Insets top="10" bottom="10" left="20" right="10"/>
+                </padding>
+            </HBox>
+
+            <!-- Form nhập liệu -->
+            <GridPane hgap="10" vgap="10" style="-fx-background-color: #f5f5f5;">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="120"/>
+                    <ColumnConstraints minWidth="200"/>
+                    <ColumnConstraints minWidth="120"/>
+                    <ColumnConstraints minWidth="200"/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="30"/>
+                    <RowConstraints minHeight="30"/>
+                </rowConstraints>
+                <children>
+                    <Label text="Nhân viên:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <ComboBox fx:id="userComboBox" promptText="Chọn nhân viên" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                    <Label text="Ngày bắt đầu:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                    <HBox spacing="5" GridPane.rowIndex="0" GridPane.columnIndex="3">
+                        <children>
+                            <DatePicker fx:id="startDatePicker"/>
+                            <Label text="Giờ:"/>
+                            <Spinner fx:id="startHourSpinner" prefWidth="60"/>
+                            <Label text="Phút:"/>
+                            <Spinner fx:id="startMinuteSpinner" prefWidth="60"/>
+                        </children>
+                    </HBox>
+
+                    <Label text="Ngày kết thúc:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <HBox spacing="5" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                        <children>
+                            <DatePicker fx:id="endDatePicker"/>
+                            <Label text="Giờ:"/>
+                            <Spinner fx:id="endHourSpinner" prefWidth="60"/>
+                            <Label text="Phút:"/>
+                            <Spinner fx:id="endMinuteSpinner" prefWidth="60"/>
+                        </children>
+                    </HBox>
+                </children>
+                <padding>
+                    <Insets top="10" bottom="10" left="20" right="20"/>
+                </padding>
+            </GridPane>
+
+            <!-- Các nút thao tác -->
+            <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 0 0 0 20;">
+                <children>
+                    <Button fx:id="addButton" text="Thêm"/>
+                    <Button fx:id="updateButton" text="Cập nhật"/>
+                    <Button fx:id="deleteButton" text="Xóa"/>
+                    <Button fx:id="endShiftButton" text="Kết thúc ca"/>
+                    <Button fx:id="refreshButton" text="Làm mới"/>
+                </children>
+            </HBox>
+
+            <!-- Bảng danh sách ca làm việc -->
+            <VBox spacing="5" VBox.vgrow="ALWAYS" style="-fx-padding: 0 20 20 20;">
+                <children>
+                    <Label text="Danh sách ca làm việc" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+                    <TableView fx:id="shiftTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
+                            <TableColumn fx:id="userColumn" text="Nhân viên" prefWidth="150"/>
+                            <TableColumn fx:id="startTimeColumn" text="Bắt đầu" prefWidth="150"/>
+                            <TableColumn fx:id="endTimeColumn" text="Kết thúc" prefWidth="150"/>
+                            <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="100"/>
+                        </columns>
+                    </TableView>
+                </children>
+            </VBox>
+        </VBox>
+    </children>
+</AnchorPane>

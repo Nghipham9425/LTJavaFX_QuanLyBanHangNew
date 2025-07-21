@@ -104,6 +104,16 @@
                 </ImageView>
                 <Label text="Quản lý người dùng" />
             </HBox>
+         <HBox alignment="CENTER_LEFT" onMouseClicked="#handleShiftManagement" spacing="10" styleClass="menu-item">
+            <children>
+               <ImageView fitHeight="20" fitWidth="20">
+                  <image>
+                     <Image url="@../images/icon_shift.png" />
+                  </image>
+               </ImageView>
+               <Label text="Quản lý ca làm" />
+            </children>
+         </HBox>
             <!-- Báo cáo -->
             <HBox alignment="CENTER_LEFT" onMouseClicked="#handleReportManagement" spacing="10" styleClass="menu-item">
                 <ImageView fitHeight="20" fitWidth="20">
