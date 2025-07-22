@@ -42,10 +42,11 @@ public class ShiftDAO {
         try (Connection conn = DatabaseConnection.getConnection();
             PreparedStatement stmt= conn.prepareStatement(sql))
         {
-            stmt.setInt(1, shift.getId());
+            stmt.setInt(1, shift.getUserId());
             stmt.setTimestamp(2, Timestamp.valueOf(shift.getStartTime()));
             stmt.setTimestamp(3, Timestamp.valueOf(shift.getEndTime()));
             stmt.setString(4, shift.getStatus());
+            stmt.setInt(5, shift.getId());
             int rowAffected= stmt.executeUpdate();
             return rowAffected>0;
         }
