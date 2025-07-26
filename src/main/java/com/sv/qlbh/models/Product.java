@@ -121,6 +121,6 @@ public class Product {
     
     @Override
     public String toString() {
-        return name; // Để hiển thị tên sản phẩm thay vì object reference
+        return name;
     }
 }

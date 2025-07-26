@@ -34,14 +34,24 @@ public class UserDAO {
     }
 
     public boolean update(User user) throws SQLException {
-        String sql = "UPDATE users SET password=?, full_name=?, role=?, status=? WHERE id=?";
+        String sql = "UPDATE users SET full_name=?, role=?, status=? WHERE id=?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, user.getFullName());
+            ps.setString(2, user.getRole());
+            ps.setBoolean(3, user.isStatus());
+            ps.setInt(4, user.getId());
+            int row = ps.executeUpdate();
+            return row > 0;
+        }
+    }
+    
+    public boolean updatePassword(User user) throws SQLException {
+        String sql = "UPDATE users SET password=? WHERE id=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user.getPassword());
-            ps.setString(2, user.getFullName());
-            ps.setString(3, user.getRole());
-            ps.setBoolean(4, user.isStatus());
-            ps.setInt(5, user.getId());
+            ps.setInt(2, user.getId());
             int row = ps.executeUpdate();
             return row > 0;
         }
@@ -117,7 +127,7 @@ public class UserDAO {
     public User login(String username, String password) throws SQLException {
         String sql = "SELECT * FROM users WHERE username=? AND password=? AND status=true";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
             ps.setString(2, password);
             try (ResultSet rs = ps.executeQuery()) {

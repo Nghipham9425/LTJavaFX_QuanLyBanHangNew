@@ -26,55 +26,42 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
- * POS Controller with VNPay Integration
  * @author nghip
  */
 public class POSController implements Initializable {
-    
-    // FXML Controls
-    // Header controls
-    @FXML private Label lblCurrentUser;
-    @FXML private Label lblCurrentTime;
-    
-    // Product controls
+      
+
     @FXML private TextField txtProductSearch;
     @FXML private TableView<Product> tblProducts;
     @FXML private TableColumn<Product, String> colProductName;
     @FXML private TableColumn<Product, Double> colProductPrice;
     @FXML private TableColumn<Product, Integer> colProductStock;
     
-    // Cart controls
+
     @FXML private TableView<CartItem> tblCart;
     @FXML private TableColumn<CartItem, String> colCartProduct;
     @FXML private TableColumn<CartItem, Integer> colCartQuantity;
-    @FXML private TableColumn<CartItem, Double> colCartPrice;
-    @FXML private TableColumn<CartItem, Double> colCartTotal;
-    
-    // Form controls
+    @FXML private TableColumn<CartItem, Double> colCartPrice,colCartTotal; 
+
     @FXML private ComboBox<Customer> cmbCustomer;
-    @FXML private Label lblSubtotal;
-    @FXML private Label lblDiscount;
-    @FXML private Label lblTotal;
-    @FXML private RadioButton rbCash;
-    @FXML private RadioButton rbVNPay;
-    @FXML private Button btnCheckout;
-    @FXML private Button btnClearCart;
+    @FXML private Label lblSubtotal,lblDiscount,lblTotal;
+    @FXML private RadioButton rbCash,rbVNPay;
     
-    // Data
-    private ObservableList<Product> productList = FXCollections.observableArrayList();
-    private ObservableList<CartItem> cartItems = FXCollections.observableArrayList();
-    private ObservableList<Customer> customerList = FXCollections.observableArrayList();
+
+    private final ObservableList<Product> productList = FXCollections.observableArrayList();
+    private final ObservableList<CartItem> cartItems = FXCollections.observableArrayList();
+    private final ObservableList<Customer> customerList = FXCollections.observableArrayList();
     
-    // DAOs
-    private ProductDAO productDAO = new ProductDAO();
-    private CustomerDAO customerDAO = new CustomerDAO();
-    private OrderDAO orderDAO = new OrderDAO();
-    private OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
-    private InventoryDAO inventoryDAO = new InventoryDAO();
+
+    private final ProductDAO productDAO = new ProductDAO();
+    private final CustomerDAO customerDAO = new CustomerDAO();
+    private final OrderDAO orderDAO = new OrderDAO();
+    private final OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
+    private final InventoryDAO inventoryDAO = new InventoryDAO();
     
-    // Other services
+
     private HostServices hostServices;
-    private DecimalFormat df = new DecimalFormat("#,##0.00");
+    private final DecimalFormat df = new DecimalFormat("#,##0.00");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -91,24 +78,33 @@ public class POSController implements Initializable {
         this.hostServices = hostServices;
     }
     
-    private void setupTableColumns() {
-        // Product table
+        private void setupTableColumns() {
+   
         colProductName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colProductPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
         colProductStock.setCellValueFactory(new PropertyValueFactory<>("stock"));
-        
-        // Cart table
+
+
         colCartProduct.setCellValueFactory(cellData -> 
             new SimpleStringProperty(cellData.getValue().getProductName()));
         colCartQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         colCartPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
         colCartTotal.setCellValueFactory(cellData -> 
             new javafx.beans.property.SimpleDoubleProperty(cellData.getValue().getTotalAfterDiscount()).asObject());
-        
-        // Set tables data
+
+
+        tblCart.setEditable(true);
+        colCartQuantity.setEditable(true);
+
+
+        colCartQuantity.setCellFactory(TextFieldTableCell.forTableColumn(
+            new javafx.util.converter.IntegerStringConverter()));
+
+
         tblProducts.setItems(productList);
         tblCart.setItems(cartItems);
     }
+
     
     private void setupCustomerComboBox() {
         cmbCustomer.setItems(customerList);
@@ -116,7 +112,7 @@ public class POSController implements Initializable {
             @Override
             public String toString(Customer customer) {
                 if (customer == null) return "";
-                if (customer.getId() == -1) return customer.getName(); // Walk-in customer
+                if (customer.getId() == -1) return customer.getName();
                 return customer.getName() + " - " + customer.getPhone();
             }
             
@@ -134,7 +130,7 @@ public class POSController implements Initializable {
         ToggleGroup paymentGroup = new ToggleGroup();
         rbCash.setToggleGroup(paymentGroup);
         rbVNPay.setToggleGroup(paymentGroup);
-        rbCash.setSelected(true); // Default
+        rbCash.setSelected(true); 
     }
     
     private void setupEventHandlers() {
@@ -143,7 +139,6 @@ public class POSController implements Initializable {
             searchProducts(newText);
         });
         
-        // Double click to add product to cart
         tblProducts.setRowFactory(tv -> {
             TableRow<Product> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -154,14 +149,28 @@ public class POSController implements Initializable {
             return row;
         });
         
-        // Cart quantity editing
-        colCartQuantity.setCellFactory(TextFieldTableCell.forTableColumn(
-            new javafx.util.converter.IntegerStringConverter()));
         colCartQuantity.setOnEditCommit(event -> {
-            CartItem item = event.getRowValue();
-            item.setQuantity(event.getNewValue());
-            updateTotals();
-        });
+        CartItem item = event.getRowValue();
+        int newQuantity = event.getNewValue();
+        int stock = item.getProduct().getStock();
+
+        if (newQuantity <= 0) {
+            AlertUtils.showWarning("Cảnh báo", "Số lượng phải lớn hơn 0!");
+            tblCart.refresh();
+            return;
+        }
+
+        if (newQuantity > stock) {
+            AlertUtils.showWarning("Cảnh báo", "Số lượng vượt quá tồn kho (" + stock + ")!");
+            tblCart.refresh(); // Khôi phục lại
+            return;
+        }
+
+        item.setQuantity(newQuantity);
+        tblCart.refresh();
+        updateTotals();
+    });
+
         
         // Cart total updates when quantity changes
         cartItems.addListener((javafx.collections.ListChangeListener<CartItem>) change -> {
@@ -179,25 +188,29 @@ public class POSController implements Initializable {
     }
     
     private void loadCustomers() {
-        List<Customer> allCustomers = customerDAO.getAll();
-        
-        // Filter only active customers (status = true)
-        List<Customer> activeCustomers = allCustomers.stream()
-                .filter(Customer::isStatus)
-                .collect(java.util.stream.Collectors.toList());
-        
-        // Add "Walk-in Customer" option
-        Customer walkInCustomer = new Customer();
-        walkInCustomer.setId(-1); // Special ID for walk-in
-        walkInCustomer.setName("Khách vãng lai");
-        walkInCustomer.setPhone("N/A");
-        
-        customerList.clear();
-        customerList.add(walkInCustomer); // Add walk-in option first
-        customerList.addAll(activeCustomers); // Only add active customers
-        
-        // Set walk-in as default selection
-        cmbCustomer.setValue(walkInCustomer);
+        try {
+            List<Customer> allCustomers = customerDAO.getAll();
+            
+            // Filter only active customers (status = true)
+            List<Customer> activeCustomers = allCustomers.stream()
+                    .filter(Customer::isStatus)
+                    .collect(java.util.stream.Collectors.toList());
+            
+            // Add "Walk-in Customer" option
+            Customer walkInCustomer = new Customer();
+            walkInCustomer.setId(-1); // Special ID for walk-in
+            walkInCustomer.setName("Khách vãng lai");
+            walkInCustomer.setPhone("N/A");
+            
+            customerList.clear();
+            customerList.add(walkInCustomer); // Add walk-in option first
+            customerList.addAll(activeCustomers); // Only add active customers
+            
+            // Set walk-in as default selection
+            cmbCustomer.setValue(walkInCustomer);
+        } catch (SQLException e) {
+            AlertUtils.showError("Lỗi", "Không thể tải danh sách khách hàng: " + e.getMessage());
+        }
     }
     
     private void searchProducts(String searchText) {

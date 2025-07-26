@@ -130,7 +130,6 @@ public class SupplierController implements Initializable {
             AlertUtils.showValidationError("Email không hợp lệ");
             return false;
         }
-        
         return true;
     }
 

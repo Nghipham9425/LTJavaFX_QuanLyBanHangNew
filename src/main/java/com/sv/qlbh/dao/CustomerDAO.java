@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class CustomerDAO {
 
-    public List<Customer> getAll() {
+    public List<Customer> getAll() throws SQLException {
         List<Customer> customers = new ArrayList<>();
         String sql = "SELECT * FROM customers ORDER BY name";
         
@@ -26,8 +26,6 @@ public class CustomerDAO {
                 customers.add(mapResultSetToCustomer(rs));
             }
             System.out.println("Đã tải thành công " + customers.size() + " khách hàng");
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi lấy danh sách khách hàng: " + e.getMessage());
         }
         
         return customers;

@@ -17,8 +17,7 @@ public class OrderDAO {
      * Tạo đơn hàng mới
      */
     public int createOrder(Order order) throws SQLException {
-        String sql = "INSERT INTO orders (customer_id, user_id, total_amount, discount_amount, " +
-                    "final_amount, payment_method, status, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO orders (customer_id, user_id, total_amount, discount_amount, final_amount, payment_method, status, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -65,9 +64,7 @@ public class OrderDAO {
         }
     }
     
-    /**
-     * Cập nhật trạng thái đơn hàng với thông tin VNPay
-     */
+    
     public boolean updateOrderWithVNPayInfo(int orderId, String status, String transactionNo) throws SQLException {
         String sql = "UPDATE orders SET status = ?, note = CONCAT(IFNULL(note, ''), ' - VNPay Transaction: ', ?) WHERE id = ?";
         
@@ -124,46 +121,6 @@ public class OrderDAO {
     }
     
     /**
-     * Lấy đơn hàng theo phương thức thanh toán
-     */
-    public List<Order> getOrdersByPaymentMethod(String paymentMethod) throws SQLException {
-        String sql = "SELECT * FROM orders WHERE payment_method = ? ORDER BY created_at DESC";
-        List<Order> orders = new ArrayList<>();
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, paymentMethod);
-            
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    orders.add(mapResultSetToOrder(rs));
-                }
-            }
-        }
-        return orders;
-    }
-    
-    /**
-     * Lấy đơn hàng đang chờ thanh toán VNPay (PROCESSING)
-     */
-    public List<Order> getPendingVNPayOrders() throws SQLException {
-        String sql = "SELECT * FROM orders WHERE payment_method = 'VNPAY' AND status = 'PROCESSING' ORDER BY created_at DESC";
-        List<Order> orders = new ArrayList<>();
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    orders.add(mapResultSetToOrder(rs));
-                }
-            }
-        }
-        return orders;
-    }
-    
-    /**
      * Xóa đơn hàng (chỉ cho phép với đơn hàng PROCESSING hoặc FAILED)
      */
     public boolean deleteOrder(int orderId) throws SQLException {
@@ -181,24 +138,15 @@ public class OrderDAO {
      * Lấy tất cả đơn hàng
      */
     public List<Order> getAllOrders() throws SQLException {
-        String sql = "SELECT o.*, c.name as customer_name FROM orders o " +
-                    "LEFT JOIN customers c ON o.customer_id = c.id " +
-                    "ORDER BY o.created_at DESC";
+        String sql = "SELECT * FROM orders ORDER BY created_at DESC";
         List<Order> orders = new ArrayList<>();
         
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
             
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Order order = mapResultSetToOrder(rs);
-                    // Set customer name if available
-                    String customerName = rs.getString("customer_name");
-                    if (customerName != null) {
-                        order.setCustomerName(customerName);
-                    }
-                    orders.add(order);
-                }
+            while (rs.next()) {
+                orders.add(mapResultSetToOrder(rs));
             }
         }
         return orders;
@@ -216,26 +164,6 @@ public class OrderDAO {
             stmt.setInt(1, orderId);
             return stmt.executeUpdate() > 0;
         }
-    }
-
-    /**
-     * Thống kê đơn hàng theo trạng thái
-     */
-    public int countOrdersByStatus(String status) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM orders WHERE status = ?";
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, status);
-            
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        }
-        return 0;
     }
     
     /**

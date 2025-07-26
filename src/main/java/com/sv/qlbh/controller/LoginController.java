@@ -67,7 +67,7 @@ public class LoginController {
           
           new Thread(() -> {
               try {
-                  // Gọi UserDAO để kiểm tra đăng nhập
+                
                   UserDAO userDAO = new UserDAO();
                   User user = userDAO.login(username, password);
                   
@@ -76,15 +76,13 @@ public class LoginController {
                       btnLogin.setDisable(false);
                       
                       if (user != null) {
-                          // Lưu thông tin user đã đăng nhập
+                         
                           SessionManager.setCurrentUser(user);
                           
-                          // Chuyển đến Dashboard
                           try {
                               FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Dashboard.fxml"));
                               Parent root = loader.load();
-                              
-                              // Inject HostServices into DashboardController
+                           
                               DashboardController dashboardController = loader.getController();
                               if (dashboardController != null && hostServices != null) {
                                   dashboardController.setHostServices(hostServices);

@@ -19,7 +19,7 @@ public class Inventory {
     private String referenceType;
     private String note;
     private LocalDateTime createdAt;
-    private String productName; // Để lưu trữ tên sản phẩm khi hiển thị trên UI
+    private String productName;
 
     public Inventory() {
     }
@@ -100,7 +100,6 @@ public class Inventory {
         this.createdAt = createdAt;
     }
 
-    // Getter và Setter cho productName
     public String getProductName() {
         return productName;
     }

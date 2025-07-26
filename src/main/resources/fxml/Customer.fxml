@@ -48,7 +48,6 @@
             <!-- BUTTONS -->
             <HBox alignment="CENTER_LEFT" spacing="10">
                 <Button onAction="#handleViewDetails" styleClass="btn-info" text="Xem Chi Tiết" />
-                <Button onAction="#handleExportExcel" styleClass="btn-success" text="Xuất Excel" />
             </HBox>
         </VBox>
 

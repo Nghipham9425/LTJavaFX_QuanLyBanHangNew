@@ -91,6 +91,6 @@ public class Supplier {
     
     @Override
     public String toString() {
-        return name; // Để hiển thị tên supplier thay vì object reference
+        return name;
     }
 }

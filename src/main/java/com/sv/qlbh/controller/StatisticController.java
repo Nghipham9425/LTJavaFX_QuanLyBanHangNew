@@ -2,33 +2,33 @@ package com.sv.qlbh.controller;
 
 import com.sv.qlbh.dao.InventoryDAO;
 import com.sv.qlbh.dao.ProductDAO;
-import com.sv.qlbh.models.BaoCao;
+import com.sv.qlbh.models.Statistic;
 import com.sv.qlbh.models.Inventory;
 import com.sv.qlbh.models.Product;
+import java.sql.SQLException;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+
 import java.time.LocalDate;
 import java.util.List;
 
-public class BaoCaoController {
+public class StatisticController {
     @FXML private Label lblTotalAmount;
     @FXML private ComboBox<String> cbxReportType;
     @FXML private DatePicker dpStartDate;
     @FXML private DatePicker dpEndDate;
-    @FXML private Button btnFilter;
-    @FXML private Button btnClear;
 
-    @FXML private TableView<BaoCao> tblReport;
-    @FXML private TableColumn<BaoCao, Integer> colId;
-    @FXML private TableColumn<BaoCao, String> colName;
-    @FXML private TableColumn<BaoCao, String> colCategory;
-    @FXML private TableColumn<BaoCao, Integer> colQuantity;
-    @FXML private TableColumn<BaoCao, Double> colAmount;
-    @FXML private TableColumn<BaoCao, LocalDate> colDate;
+    @FXML private TableView<Statistic> tblReport;
+    @FXML private TableColumn<Statistic, Integer> colId;
+    @FXML private TableColumn<Statistic, String> colName;
+    @FXML private TableColumn<Statistic, String> colCategory;
+    @FXML private TableColumn<Statistic, Integer> colQuantity;
+    @FXML private TableColumn<Statistic, Double> colAmount;
+    @FXML private TableColumn<Statistic, LocalDate> colDate;
 
     private final InventoryDAO inventoryDAO = new InventoryDAO();
     private final ProductDAO productDAO = new ProductDAO();
@@ -49,7 +49,7 @@ public class BaoCaoController {
     }
 
     private void loadReportData() {
-        ObservableList<BaoCao> data = FXCollections.observableArrayList();
+        ObservableList<Statistic> data = FXCollections.observableArrayList();
 
         try {
             List<Inventory> inventoryList = inventoryDAO.getAllInventoryEntries();
@@ -61,7 +61,7 @@ public class BaoCaoController {
                 double amount = product.getPrice() * inv.getQuantity();
                 LocalDate date = inv.getCreatedAt().toLocalDate();
 
-                data.add(new BaoCao(
+                data.add(new Statistic(
                         inv.getId(),
                         product.getName(),
                         type,
@@ -71,7 +71,7 @@ public class BaoCaoController {
                 ));
             }
             tblReport.setItems(data);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải báo cáo: " + e.getMessage());
         }
@@ -88,7 +88,7 @@ public class BaoCaoController {
             return;
         }
 
-        ObservableList<BaoCao> filteredData = FXCollections.observableArrayList();
+        ObservableList<Statistic> filteredData = FXCollections.observableArrayList();
 
         try {
             List<Inventory> inventoryList = inventoryDAO.getAllInventoryEntries();
@@ -108,7 +108,7 @@ public class BaoCaoController {
 
                 double amount = product.getPrice() * inv.getQuantity();
 
-                filteredData.add(new BaoCao(
+                filteredData.add(new Statistic(
                         inv.getId(),
                         product.getName(),
                         type,
@@ -136,7 +136,7 @@ public class BaoCaoController {
     @FXML
 private void handleCalculateTotal() {
     double total = 0;
-    for (BaoCao row : tblReport.getItems()) {
+    for (Statistic row : tblReport.getItems()) {
         total += row.getAmount();
     }
     lblTotalAmount.setText(String.format("Tổng doanh thu: %, .0f₫", total));

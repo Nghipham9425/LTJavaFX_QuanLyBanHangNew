@@ -35,12 +35,10 @@ public class UserManagementController implements Initializable {
     @FXML private TableColumn<User,String> colUsername;
     @FXML private TableColumn<User,String> colFullName;
     @FXML private TableColumn<User,String> colRole;
-    @FXML private TableColumn<User,String> colEmail;
     @FXML private TableColumn<User,String> colStatus;
 
     @FXML private TextField txtUsername;
     @FXML private TextField txtFullName;
-    @FXML private TextField txtEmail;
     @FXML private ComboBox<String> cbRole;
     @FXML private CheckBox chkActive;
     @FXML private TextField txtSearch;
@@ -49,11 +47,9 @@ public class UserManagementController implements Initializable {
 
 
     private final UserDAO userDAO = new UserDAO();
-    private ObservableList<User> userList = FXCollections.observableArrayList();
+    private final ObservableList<User> userList = FXCollections.observableArrayList();
 
-    /**
-     * Initializes the controller class.
-     */
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
        colUsername.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUsername()));
@@ -153,63 +149,95 @@ public class UserManagementController implements Initializable {
             } else {
                 showAlert("Lỗi", "Không thể thêm người dùng!", Alert.AlertType.ERROR);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
             showAlert("Lỗi", "Có lỗi xảy ra khi thêm người dùng!", Alert.AlertType.ERROR);
         }
     }
     @FXML private void handleUpdateUser() throws SQLException {
-        //lay user dang select
-        User user=tableUser.getSelectionModel().getSelectedItem();
-        if(user==null){
+        // Lấy user đang select
+        User user = tableUser.getSelectionModel().getSelectedItem();
+        if (user == null) {
             showAlert("Thông báo", "Vui lòng chọn người dùng để cập nhật!", Alert.AlertType.WARNING);
-        return;
+            return;
         }
-        //lay du lieu tu form
-        String fullName=txtFullName.getText().trim();
-        String role=cbRole.getValue();
-        boolean status=chkActive.isSelected();
-        String password=txtPassword.getText().trim();
-        String confirmPassword=txtConfirmPassword.getText().trim();
+        
+        // Lấy dữ liệu từ form
+        String fullName = txtFullName.getText().trim();
+        String role = cbRole.getValue();
+        boolean status = chkActive.isSelected();
+        String password = txtPassword.getText().trim();
+        String confirmPassword = txtConfirmPassword.getText().trim();
 
-        //cap nhat cac thong tin
-        // 3. Cập nhật các trường thông tin khác
-        user.setFullName(fullName);
-        user.setRole(role);
-        user.setStatus(status);
-
-        // xu ly oi  password neu co
-        if (!password.isEmpty() || !confirmPassword.isEmpty()) {
-            if (!password.equals(confirmPassword)) {
-                showAlert("Lỗi", "Mật khẩu và xác nhận mật khẩu không khớp!", Alert.AlertType.WARNING);
-                return;
-            }
-            user.setPassword(password);
+        // Validation
+        if (fullName.isEmpty() || role == null) {
+            showAlert("Lỗi", "Vui lòng nhập đầy đủ thông tin bắt buộc!", Alert.AlertType.WARNING);
+            return;
         }
+
         try {
-            boolean check = userDAO.update(user);
-            if (check) {
+            // Cập nhật thông tin cơ bản
+            user.setFullName(fullName);
+            user.setRole(role);
+            user.setStatus(status);
+            
+            boolean updateSuccess = userDAO.update(user);
+            
+            // Cập nhật password nếu có
+            if (!password.isEmpty() || !confirmPassword.isEmpty()) {
+                if (!password.equals(confirmPassword)) {
+                    showAlert("Lỗi", "Mật khẩu và xác nhận mật khẩu không khớp!", Alert.AlertType.WARNING);
+                    return;
+                }
+                if (password.length() < 6) {
+                    showAlert("Lỗi", "Mật khẩu phải có ít nhất 6 ký tự!", Alert.AlertType.WARNING);
+                    return;
+                }
+                user.setPassword(password);
+                updateSuccess = userDAO.updatePassword(user) && updateSuccess;
+            }
+            
+            if (updateSuccess) {
                 LoadUserList();
-                showUserDetails(null);
                 clearForm();
-                showAlert("Thành công", "Đã cập nhật người dùng!", Alert.AlertType.INFORMATION);
+                showUserDetails(null);
+                showAlert("Thành công", "Đã cập nhật người dùng thành công!", Alert.AlertType.INFORMATION);
             } else {
                 showAlert("Lỗi", "Không thể cập nhật người dùng!", Alert.AlertType.ERROR);
             }
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            showAlert("Lỗi", "Có lỗi xảy ra khi cập nhật người dùng!", Alert.AlertType.ERROR);
+            showAlert("Lỗi", "Có lỗi xảy ra khi cập nhật người dùng: " + e.getMessage(), Alert.AlertType.ERROR);
         }
-        
     }
     // @FXML private void handleDeleteUser() {}
     @FXML private void handleClearUser() {
         clearForm();
     }
     @FXML private void handleResetPassword() {}
-    @FXML private void handleSearch() {}
+    @FXML private void handleSearch() {
+        String searchText = txtSearch.getText().trim().toLowerCase();
+        if (searchText.isEmpty()) {
+            LoadUserList();
+            return;
+        }
+        
+        try {
+            List<User> allUsers = userDAO.getAll();
+            List<User> filteredUsers = allUsers.stream()
+                .filter(user -> 
+                    user.getUsername().toLowerCase().contains(searchText) ||
+                    user.getFullName().toLowerCase().contains(searchText) ||
+                    user.getRole().toLowerCase().contains(searchText))
+                .collect(java.util.stream.Collectors.toList());
+            
+            userList.setAll(filteredUsers);
+        } catch (SQLException e) {
+            showAlert("Lỗi", "Không thể tìm kiếm: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
     @FXML private void handleRefresh() {
         clearForm();    
         showUserDetails(null);
+        LoadUserList(); 
     }
 }

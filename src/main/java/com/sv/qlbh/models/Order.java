@@ -22,7 +22,7 @@ public class Order {
     private String status;
     private String note;
     private LocalDateTime createdAt;
-    private String customerName; // For display purposes
+    private String customerName; 
 
     public Order() {
     }

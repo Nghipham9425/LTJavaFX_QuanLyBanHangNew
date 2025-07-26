@@ -61,6 +61,6 @@ public class Category {
     
     @Override
     public String toString() {
-        return name; // Để ComboBox hiển thị tên thay vì object reference
+        return name;
     }
 }

@@ -127,23 +127,6 @@ public class ProductDAO {
         return products;
     }
     
-    public List<Product> getBySupplier(int supplierId) throws SQLException {
-        String sql = "SELECT * FROM products WHERE supplier_id = ? ORDER BY name";
-        List<Product> products = new ArrayList<>();
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setInt(1, supplierId);
-            ResultSet rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                products.add(mapResultSetToProduct(rs));
-            }
-        }
-        return products;
-    }
-    
     public List<Product> getByName(String name) throws SQLException {
         String sql = "SELECT * FROM products WHERE name LIKE ? ORDER BY name";
         List<Product> products = new ArrayList<>();
@@ -176,64 +159,25 @@ public class ProductDAO {
         }
     }
     
-    public List<Product> getByStatus(boolean status) throws SQLException {
-        String sql = "SELECT * FROM products WHERE status = ? ORDER BY name";
-        List<Product> products = new ArrayList<>();
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setBoolean(1, status);
-            ResultSet rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                products.add(mapResultSetToProduct(rs));
-            }
-        }
-        return products;
-    }
-    
     public boolean updateStock(int productId, int newStock) throws SQLException {
         String sql = "UPDATE products SET stock = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
             stmt.setInt(1, newStock);
             stmt.setInt(2, productId);
-            
             return stmt.executeUpdate() > 0;
         }
     }
-    
-    public List<Product> getLowStockProducts(int threshold) throws SQLException {
-        String sql = "SELECT * FROM products WHERE stock <= ? AND status = true ORDER BY stock ASC";
-        List<Product> products = new ArrayList<>();
-        
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setInt(1, threshold);
-            ResultSet rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                products.add(mapResultSetToProduct(rs));
-            }
-        }
-        return products;
-    }
-    
+
     public List<Product> searchByNameOrBarcode(String keyword) throws SQLException {
         String sql = "SELECT * FROM products WHERE name LIKE ? OR barcode LIKE ? ORDER BY name";
         List<Product> products = new ArrayList<>();
-        
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
             String searchPattern = "%" + keyword + "%";
             stmt.setString(1, searchPattern);
             stmt.setString(2, searchPattern);
             ResultSet rs = stmt.executeQuery();
-            
             while (rs.next()) {
                 products.add(mapResultSetToProduct(rs));
             }

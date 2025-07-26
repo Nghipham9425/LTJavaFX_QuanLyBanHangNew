@@ -2,7 +2,7 @@ package com.sv.qlbh.models;
 
 import java.time.LocalDate;
 
-public class BaoCao {
+public class Statistic {
     private int id;
     private String name;
     private String category;
@@ -10,7 +10,7 @@ public class BaoCao {
     private double amount;
     private LocalDate date;
 
-    public BaoCao(int id, String name, String category, int quantity, double amount, LocalDate date) {
+    public Statistic(int id, String name, String category, int quantity, double amount, LocalDate date) {
         this.id = id;
         this.name = name;
         this.category = category;

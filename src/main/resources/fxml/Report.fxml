@@ -1,47 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.sv.qlbh.controller.BaoCaoController"
-      spacing="20" styleClass="content-area" stylesheets="@../styles/productcategory.css">
+<VBox spacing="20" styleClass="content-area" stylesheets="@../styles/productcategory.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="com.sv.qlbh.controller.StatisticController">
 
     <!-- Thanh lọc dữ liệu -->
-    <HBox spacing="15" alignment="CENTER_LEFT" styleClass="search-bar">
-        <Label text="Loại báo cáo:" styleClass="search-label"/>
-        <ComboBox fx:id="cbxReportType" prefWidth="150" styleClass="filter-combo"/>
+    <HBox alignment="CENTER_LEFT" spacing="15" styleClass="search-bar">
+        <Label styleClass="search-label" text="Loại báo cáo:" />
+        <ComboBox fx:id="cbxReportType" prefWidth="150" styleClass="filter-combo" />
 
-        <Label text="Từ ngày:" styleClass="search-label"/>
-        <DatePicker fx:id="dpStartDate" styleClass="form-field"/>
+        <Label styleClass="search-label" text="Từ ngày:" />
+        <DatePicker fx:id="dpStartDate" styleClass="form-field" />
 
-        <Label text="Đến ngày:" styleClass="search-label"/>
-        <DatePicker fx:id="dpEndDate" styleClass="form-field"/>
+        <Label styleClass="search-label" text="Đến ngày:" />
+        <DatePicker fx:id="dpEndDate" styleClass="form-field" />
 
-        <Button text="Lọc" fx:id="btnFilter" onAction="#handleFilterReport" styleClass="search-btn"/>
-        <Button text="Xóa lọc" fx:id="btnClear" onAction="#handleClearFilter" styleClass="refresh-btn"/>
+        <Button fx:id="btnFilter" onAction="#handleFilterReport" prefHeight="25.0" prefWidth="44.0" styleClass="search-btn" text="Lọc" />
+        <Button fx:id="btnClear" onAction="#handleClearFilter" prefHeight="25.0" prefWidth="58.0" styleClass="refresh-btn" text="Xóa lọc" />
     </HBox>
 
     <!-- Bảng dữ liệu -->
     <TableView fx:id="tblReport" prefHeight="500" styleClass="data-table">
         <columns>
-            <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
-            <TableColumn fx:id="colName" text="Tên sản phẩm" prefWidth="150"/>
-            <TableColumn fx:id="colCategory" text="Loại giao dịch" prefWidth="120"/>
-            <TableColumn fx:id="colQuantity" text="Số lượng" prefWidth="100"/>
-            <TableColumn fx:id="colAmount" text="Thành tiền" prefWidth="150"/>
-            <TableColumn fx:id="colDate" text="Ngày" prefWidth="120"/>
+            <TableColumn fx:id="colId" prefWidth="60" text="ID" />
+            <TableColumn fx:id="colName" prefWidth="150" text="Tên sản phẩm" />
+            <TableColumn fx:id="colCategory" prefWidth="120" text="Loại giao dịch" />
+            <TableColumn fx:id="colQuantity" prefWidth="100" text="Số lượng" />
+            <TableColumn fx:id="colAmount" prefWidth="150" text="Thành tiền" />
+            <TableColumn fx:id="colDate" prefWidth="120" text="Ngày" />
         </columns>
     </TableView>
-<HBox spacing="10" alignment="CENTER_LEFT">
-    <Button text="Tính tổng doanh thu" onAction="#handleCalculateTotal" />
-    <Label fx:id="lblTotalAmount" text="Tổng doanh thu: 0₫"
-           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2b7a0b;" />
+<HBox alignment="CENTER_LEFT" spacing="10">
+    <Button onAction="#handleCalculateTotal" text="Tính tổng doanh thu" />
+    <Label fx:id="lblTotalAmount" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2b7a0b;" text="Tổng doanh thu: 0₫" />
 </HBox>
 
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 
 </VBox>

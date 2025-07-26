@@ -164,62 +164,32 @@
         
         <!-- MAIN CONTENT -->
         <ScrollPane fitToWidth="true" styleClass="content-scroll" VBox.vgrow="ALWAYS">
-            <VBox fx:id="contentArea" spacing="20" styleClass="content-area">
-                                 <!-- THỐNG KÊ NHANH - 4 Ô -->
-                 <HBox alignment="CENTER" spacing="18">
-                     <VBox alignment="CENTER" prefHeight="120" prefWidth="180" styleClass="stat-card stat-blue">
-                         <Label styleClass="stat-label" text="Sản phẩm" />
-                         <Label styleClass="stat-value" text="1200" />
-                     </VBox>
-                     <VBox alignment="CENTER" prefHeight="120" prefWidth="180" styleClass="stat-card stat-green">
-                         <Label styleClass="stat-label" text="Khách hàng" />
-                         <Label styleClass="stat-value" text="350" />
-                     </VBox>
-                     <VBox alignment="CENTER" prefHeight="120" prefWidth="180" styleClass="stat-card stat-orange">
-                         <Label styleClass="stat-label" text="Nhà cung cấp" />
-                         <Label styleClass="stat-value" text="25" />
-                     </VBox>
-                     <VBox alignment="CENTER" prefHeight="120" prefWidth="180" styleClass="stat-card stat-purple">
-                         <Label styleClass="stat-label" text="Tổng đơn hàng" />
-                         <Label styleClass="stat-value" text="1,250" />
-                     </VBox>
-                 </HBox>
-                 
-                 <!-- BLOCK THÔNG TIN - Chia 2 -->
-                 <HBox alignment="CENTER" spacing="18">
-                     <VBox alignment="TOP_LEFT" prefHeight="180" prefWidth="400" styleClass="block-card">
-                         <Label styleClass="block-title" text="Lịch sử bán hàng" />
-                     </VBox>
-                     <VBox alignment="TOP_LEFT" prefHeight="180" prefWidth="400" styleClass="block-card">
-                         <Label styleClass="block-title" text="Biểu đồ doanh thu" />
-                     </VBox>
-                 </HBox>
-                 
-                 <!-- BLOCK THÔNG TIN - Chia 2 -->
-                 <HBox alignment="CENTER" spacing="18">
-                     <VBox alignment="TOP_LEFT" prefHeight="120" prefWidth="400" styleClass="block-card">
-                         <Label styleClass="block-title" text="Sản phẩm sắp hết hàng" />
-                         <Label styleClass="block-text" text="Sản phẩm A - Còn 5" />
-                         <Label styleClass="block-text" text="Sản phẩm B - Còn 3" />
-                     </VBox>
-                     <VBox alignment="TOP_LEFT" prefHeight="120" prefWidth="400" styleClass="block-card">
-                         <Label styleClass="block-title" text="Hoạt động gần đây" />
-                         <Label styleClass="block-text" text="Đơn hàng mới #1234" />
-                         <Label styleClass="block-text" text="Nhập kho 50 sản phẩm" />
-                     </VBox>
-                 </HBox>
-                
-                                 <!-- CÔNG CỤ NHANH -->
-                 <HBox alignment="CENTER" spacing="18" styleClass="quick-tools">
-                     <Button onAction="#handleCreateOrder" styleClass="quick-tool-btn" text="💰 Tạo đơn hàng mới" />
-                     <Button onAction="#handleImportStock" styleClass="quick-tool-btn" text="📦 Nhập kho" />
-                     <Button onAction="#handleInventoryCheck" styleClass="quick-tool-btn" text="📊 Kiểm kê" />
-                     <Button onAction="#handleGenerateReport" styleClass="quick-tool-btn" text="📈 Báo cáo" />
-                 </HBox>
-                
-                <padding>
-                    <Insets bottom="20" left="20" right="20" top="20" />
-                </padding>
+            <VBox fx:id="contentArea" styleClass="content-area">
+                <!-- DASHBOARD CONTENT STATIC FOR CONTROLLER BINDING -->
+                <Label fx:id="dashboardWelcomeLabel" text="Chào mừng đến với hệ thống Quản Lý Bán Hàng" alignment="CENTER"
+                       style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 20px;"/>
+                <HBox spacing="25" alignment="CENTER" style="-fx-padding: 20px;">
+                    <VBox fx:id="statCardProduct" alignment="CENTER" style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 15;" prefWidth="150" prefHeight="100">
+                        <Label fx:id="statLabelProduct" text="Sản phẩm" style="-fx-font-size: 14px; -fx-text-fill: #6c757d; -fx-font-weight: bold;"/>
+                        <Label fx:id="statValueProduct" text="0" style="-fx-font-size: 20px; -fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
+                    </VBox>
+                    <VBox fx:id="statCardCustomer" alignment="CENTER" style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 15;" prefWidth="150" prefHeight="100">
+                        <Label fx:id="statLabelCustomer" text="Khách hàng" style="-fx-font-size: 14px; -fx-text-fill: #6c757d; -fx-font-weight: bold;"/>
+                        <Label fx:id="statValueCustomer" text="0" style="-fx-font-size: 20px; -fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
+                    </VBox>
+                    <VBox fx:id="statCardOrder" alignment="CENTER" style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 15;" prefWidth="150" prefHeight="100">
+                        <Label fx:id="statLabelOrder" text="Tổng đơn hàng" style="-fx-font-size: 14px; -fx-text-fill: #6c757d; -fx-font-weight: bold;"/>
+                        <Label fx:id="statValueOrder" text="0" style="-fx-font-size: 20px; -fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
+                    </VBox>
+                </HBox>
+                <VBox spacing="15" alignment="CENTER" style="-fx-padding: 20px;">
+                    <Label text="Thao tác nhanh" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #34495e; -fx-padding: 10px;"/>
+                    <HBox spacing="20" alignment="CENTER">
+                        <Button fx:id="btnQuickSale" text="Bán hàng" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-border-radius: 6; -fx-background-radius: 6;"/>
+                        <Button fx:id="btnQuickProduct" text="Quản lý sản phẩm" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-border-radius: 6; -fx-background-radius: 6;"/>
+                        <Button fx:id="btnQuickReport" text="Báo cáo" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-border-radius: 6; -fx-background-radius: 6;"/>
+                    </HBox>
+                </VBox>
             </VBox>
         </ScrollPane>
     </VBox>
