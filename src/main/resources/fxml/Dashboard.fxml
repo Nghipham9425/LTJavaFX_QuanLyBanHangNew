@@ -165,31 +165,7 @@
         <!-- MAIN CONTENT -->
         <ScrollPane fitToWidth="true" styleClass="content-scroll" VBox.vgrow="ALWAYS">
             <VBox fx:id="contentArea" styleClass="content-area">
-                <!-- DASHBOARD CONTENT STATIC FOR CONTROLLER BINDING -->
-                <Label fx:id="dashboardWelcomeLabel" text="Chào mừng đến với hệ thống Quản Lý Bán Hàng" alignment="CENTER"
-                       style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 20px;"/>
-                <HBox spacing="25" alignment="CENTER" style="-fx-padding: 20px;">
-                    <VBox fx:id="statCardProduct" alignment="CENTER" style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 15;" prefWidth="150" prefHeight="100">
-                        <Label fx:id="statLabelProduct" text="Sản phẩm" style="-fx-font-size: 14px; -fx-text-fill: #6c757d; -fx-font-weight: bold;"/>
-                        <Label fx:id="statValueProduct" text="0" style="-fx-font-size: 20px; -fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
-                    </VBox>
-                    <VBox fx:id="statCardCustomer" alignment="CENTER" style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 15;" prefWidth="150" prefHeight="100">
-                        <Label fx:id="statLabelCustomer" text="Khách hàng" style="-fx-font-size: 14px; -fx-text-fill: #6c757d; -fx-font-weight: bold;"/>
-                        <Label fx:id="statValueCustomer" text="0" style="-fx-font-size: 20px; -fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
-                    </VBox>
-                    <VBox fx:id="statCardOrder" alignment="CENTER" style="-fx-background-color: #f8f9fa; -fx-border-color: #dee2e6; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 15;" prefWidth="150" prefHeight="100">
-                        <Label fx:id="statLabelOrder" text="Tổng đơn hàng" style="-fx-font-size: 14px; -fx-text-fill: #6c757d; -fx-font-weight: bold;"/>
-                        <Label fx:id="statValueOrder" text="0" style="-fx-font-size: 20px; -fx-text-fill: #2c3e50; -fx-font-weight: bold;"/>
-                    </VBox>
-                </HBox>
-                <VBox spacing="15" alignment="CENTER" style="-fx-padding: 20px;">
-                    <Label text="Thao tác nhanh" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #34495e; -fx-padding: 10px;"/>
-                    <HBox spacing="20" alignment="CENTER">
-                        <Button fx:id="btnQuickSale" text="Bán hàng" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-border-radius: 6; -fx-background-radius: 6;"/>
-                        <Button fx:id="btnQuickProduct" text="Quản lý sản phẩm" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-border-radius: 6; -fx-background-radius: 6;"/>
-                        <Button fx:id="btnQuickReport" text="Báo cáo" style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 24; -fx-border-radius: 6; -fx-background-radius: 6;"/>
-                    </HBox>
-                </VBox>
+       
             </VBox>
         </ScrollPane>
     </VBox>

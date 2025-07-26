@@ -205,7 +205,6 @@ public class UserManagementController implements Initializable {
                 showAlert("Lỗi", "Không thể cập nhật người dùng!", Alert.AlertType.ERROR);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             showAlert("Lỗi", "Có lỗi xảy ra khi cập nhật người dùng: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }

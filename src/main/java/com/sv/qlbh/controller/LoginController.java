@@ -84,10 +84,7 @@ public class LoginController {
                               Parent root = loader.load();
                            
                               DashboardController dashboardController = loader.getController();
-                              if (dashboardController != null && hostServices != null) {
-                                  dashboardController.setHostServices(hostServices);
-                              }
-                              
+  
                               Scene scene = new Scene(root);
                               Stage stage = (Stage) btnLogin.getScene().getWindow();
                               

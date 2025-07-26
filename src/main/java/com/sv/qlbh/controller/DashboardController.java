@@ -1,11 +1,11 @@
 package com.sv.qlbh.controller;
 
+import com.sv.qlbh.dao.ProductDAO;
 import com.sv.qlbh.dao.CustomerDAO;
 import com.sv.qlbh.dao.OrderDAO;
-import com.sv.qlbh.dao.ProductDAO;
 import com.sv.qlbh.models.User;
 import com.sv.qlbh.utils.SessionManager;
-import javafx.application.HostServices;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -23,45 +23,34 @@ import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable {
     
-    @FXML private Label dashboardWelcomeLabel;
-    @FXML private VBox statCardProduct;
-    @FXML private Label statLabelProduct;
-    @FXML private Label statValueProduct;
-    @FXML private VBox statCardCustomer;
-    @FXML private Label statLabelCustomer;
-    @FXML private Label statValueCustomer;
-    @FXML private VBox statCardOrder;
-    @FXML private Label statLabelOrder;
-    @FXML private Label statValueOrder;
-    @FXML private javafx.scene.control.Button btnQuickSale;
-    @FXML private javafx.scene.control.Button btnQuickProduct;
-    @FXML private javafx.scene.control.Button btnQuickReport;
-    @FXML private VBox contentArea;
+    @FXML
+    private Label welcomeLabel;
     
-    private HostServices hostServices;
+    @FXML
+    private VBox contentArea;
     
-
     private ProductDAO productDAO;
     private CustomerDAO customerDAO;
     private OrderDAO orderDAO;
+    
 
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-  
         productDAO = new ProductDAO();
         customerDAO = new CustomerDAO();
         orderDAO = new OrderDAO();
-
+        
         User currentUser = SessionManager.getCurrentUser();
         if (currentUser != null) {
             String roleName = getRoleName(currentUser.getRole());
-            dashboardWelcomeLabel.setText("Chào mừng " + roleName + " " + currentUser.getFullName());
+            welcomeLabel.setText("Chào mừng " + roleName + " " + currentUser.getFullName());
         } else {
-            dashboardWelcomeLabel.setText("Chào mừng đến với hệ thống bán hàng");
+            welcomeLabel.setText("Chào mừng đến với hệ thống bán hàng");
         }
+        
         loadHomeContent();
-
+        System.out.println("Dashboard loaded successfully!");
     }
     
     private void loadHomeContent() {
@@ -69,25 +58,101 @@ public class DashboardController implements Initializable {
     }
     
     private void createDefaultDashboardContent() {
+        contentArea.getChildren().clear();
+        
         try {
-            // Welcome message
-            dashboardWelcomeLabel.setText("Chào mừng đến với hệ thống Quản Lý Bán Hàng");
-            // Stat cards
-            statLabelProduct.setText("Sản phẩm");
-            statValueProduct.setText(String.valueOf(getProductCount()));
-            statLabelCustomer.setText("Khách hàng");
-            statValueCustomer.setText(String.valueOf(getCustomerCount()));
-            statLabelOrder.setText("Tổng đơn hàng");
-            statValueOrder.setText(String.valueOf(getOrderCount()));
-            // Quick actions
-            btnQuickSale.setOnAction(e -> handleSalesManagement(null));
-            btnQuickProduct.setOnAction(e -> handleProductManagement(null));
-            btnQuickReport.setOnAction(e -> handleReportManagement(null));
+            javafx.scene.layout.VBox mainContainer = new javafx.scene.layout.VBox(20);
+            mainContainer.setPadding(new javafx.geometry.Insets(20));
+            
+            javafx.scene.layout.HBox statsRow = new javafx.scene.layout.HBox(18);
+            statsRow.setAlignment(javafx.geometry.Pos.CENTER);
+            
+            statsRow.getChildren().addAll(
+                createStatCard("Sản phẩm", String.valueOf(getProductCount()), "stat-card stat-blue"),
+                createStatCard("Khách hàng", String.valueOf(getCustomerCount()), "stat-card stat-green"),
+                createStatCard("Tổng đơn hàng", String.valueOf(getOrderCount()), "stat-card stat-orange"),
+                createStatCard("Doanh thu", "₫ " + formatCurrency(getTotalRevenue()), "stat-card stat-purple")
+            );
+            
+
+            
+            javafx.scene.layout.HBox toolsRow = new javafx.scene.layout.HBox(18);
+            toolsRow.setAlignment(javafx.geometry.Pos.CENTER);
+            toolsRow.getStyleClass().add("quick-tools");
+            
+            toolsRow.getChildren().addAll(
+                createQuickButton("Tạo đơn hàng mới"),
+                createQuickButton("Nhập kho"),
+                createQuickButton("Báo cáo")
+            );
+            
+            mainContainer.getChildren().addAll(statsRow, toolsRow);
+            contentArea.getChildren().add(mainContainer);
+            
         } catch (RuntimeException e) {
-            dashboardWelcomeLabel.setText("Chào mừng đến với Dashboard!");
+            javafx.scene.control.Label welcomeMsg = new javafx.scene.control.Label("Chào mừng đến với Dashboard!");
+            welcomeMsg.setStyle("-fx-font-size: 18px; -fx-text-fill: #666; -fx-padding: 20px;");
+            contentArea.getChildren().add(welcomeMsg);
         }
     }
-
+    
+    private javafx.scene.layout.VBox createStatCard(String label, String value, String styleClass) {
+        javafx.scene.layout.VBox card = new javafx.scene.layout.VBox(8);
+        card.setAlignment(javafx.geometry.Pos.CENTER);
+        card.setPrefSize(180, 120);
+        card.getStyleClass().addAll(styleClass.split(" "));
+        
+        javafx.scene.control.Label labelNode = new javafx.scene.control.Label(label);
+        labelNode.getStyleClass().add("stat-label");
+        
+        javafx.scene.control.Label valueNode = new javafx.scene.control.Label(value);
+        valueNode.getStyleClass().add("stat-value");
+        
+        card.getChildren().addAll(labelNode, valueNode);
+        return card;
+    }
+    
+    private javafx.scene.layout.VBox createInfoCard(String title, String content, double width, double height) {
+        javafx.scene.layout.VBox card = new javafx.scene.layout.VBox(12);
+        card.setAlignment(javafx.geometry.Pos.TOP_LEFT);
+        card.setPrefSize(width, height);
+        card.getStyleClass().add("block-card");
+        
+        javafx.scene.control.Label titleNode = new javafx.scene.control.Label(title);
+        titleNode.getStyleClass().add("block-title");
+        
+        card.getChildren().add(titleNode);
+        
+        if (!content.isEmpty()) {
+            String[] lines = content.split("\n");
+            for (String line : lines) {
+                javafx.scene.control.Label contentNode = new javafx.scene.control.Label(line);
+                contentNode.getStyleClass().add("block-text");
+                card.getChildren().add(contentNode);
+            }
+        }
+        
+        return card;
+    }
+    
+    private javafx.scene.control.Button createQuickButton(String text) {
+        javafx.scene.control.Button button = new javafx.scene.control.Button(text);
+        button.getStyleClass().add("quick-tool-btn");
+        
+        // Thêm event handlers cho từng button
+        if ("Tạo đơn hàng mới".equals(text)) {
+            button.setOnAction(e -> handleCreateOrder());
+        } else if ("Nhập kho".equals(text)) {
+            button.setOnAction(e -> handleInventoryManagement(null));
+        } else if ("Kiểm kê".equals(text)) {
+            button.setOnAction(e -> handleInventoryManagement(null));
+        } else if ("Báo cáo".equals(text)) {
+            button.setOnAction(e -> handleReportManagement(null));
+        }
+        
+        return button;
+    }
+    
     private int getProductCount() {
         try {
             return productDAO.getAll().size();
@@ -115,22 +180,37 @@ public class DashboardController implements Initializable {
         }
     }
     
-    public void setHostServices(HostServices hostServices) {
-        this.hostServices = hostServices;
+    private double getTotalRevenue() {
+        try {
+            double totalRevenue = 0.0;
+            var orders = orderDAO.getAllOrders();
+            for (var order : orders) {
+            
+                if (!"CANCELLED".equals(order.getStatus())) {
+                    totalRevenue += order.getFinalAmount();
+                }
+            }
+            return totalRevenue;
+        } catch (SQLException e) {
+            System.err.println("Error getting total revenue: " + e.getMessage());
+            return 0.0;
+        }
     }
+    
+    private String formatCurrency(double amount) {
+        return String.format("%,.0f", amount);
+    }
+    
+
     
     private void loadContent(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Node content = loader.load();
             
-            if (fxmlPath.equals("/fxml/POS.fxml")) {
-                com.sv.qlbh.controller.POSController posController = loader.getController();
-                if (posController != null && hostServices != null) {
-                    posController.setHostServices(hostServices);
-                }
-            }
+
             
+            contentArea.getChildren().clear();
             contentArea.getChildren().add(content);
             
         } catch (IOException e) {
@@ -156,18 +236,20 @@ public class DashboardController implements Initializable {
     
     @FXML
     private void handleCreateOrder() {
-        dashboardWelcomeLabel.setText("💰 Bán Hàng - POS");
-        loadContent("/fxml/Sales.fxml");
+        welcomeLabel.setText("💰 Bán Hàng - POS");
+        loadContent("/fxml/POS.fxml");
     }
+    
+
     
     @FXML
     private void handleHomeManagement(javafx.scene.input.MouseEvent event) {
         User currentUser = SessionManager.getCurrentUser();
         if (currentUser != null) {
             String roleName = getRoleName(currentUser.getRole());
-            dashboardWelcomeLabel.setText("Chào mừng " + roleName + " " + currentUser.getFullName());
+            welcomeLabel.setText("Chào mừng " + roleName + " " + currentUser.getFullName());
         } else {
-            dashboardWelcomeLabel.setText("Chào mừng đến với hệ thống bán hàng");
+            welcomeLabel.setText("Chào mừng đến với hệ thống bán hàng");
         }
         loadHomeContent();
         updateActiveMenuItem(event);
@@ -175,68 +257,69 @@ public class DashboardController implements Initializable {
     
     @FXML
     private void handleProductManagement(javafx.scene.input.MouseEvent event) {
-        dashboardWelcomeLabel.setText("Quản lý sản phẩm và danh mục");
+        welcomeLabel.setText("Quản lý sản phẩm và danh mục");
         loadContent("/fxml/ProductCategory.fxml");
         updateActiveMenuItem(event);
     }
     
     @FXML
     private void handleCustomerManagement(javafx.scene.input.MouseEvent event) {
-        dashboardWelcomeLabel.setText("Quản lý khách hàng");
+        welcomeLabel.setText("Quản lý khách hàng");
         loadContent("/fxml/Customer.fxml");
         updateActiveMenuItem(event);
     }
     
     @FXML
     private void handleSupplierManagement(javafx.scene.input.MouseEvent event) {
-        dashboardWelcomeLabel.setText("Quản lý nhà cung cấp");
+        welcomeLabel.setText("Quản lý nhà cung cấp");
         loadContent("/fxml/Supplier.fxml");
         updateActiveMenuItem(event);
     }
 
     @FXML
     private void handleOrderManagement(javafx.scene.input.MouseEvent event) {
-        dashboardWelcomeLabel.setText("Quản lý đơn hàng");
+        welcomeLabel.setText("Quản lý đơn hàng");
         loadContent("/fxml/Order.fxml");
         updateActiveMenuItem(event);
     }
     
     @FXML
     private void handleInventoryManagement(javafx.scene.input.MouseEvent event) {
-        dashboardWelcomeLabel.setText("Quản lý kho");
+        welcomeLabel.setText("Quản lý kho");
         loadContent("/fxml/Inventory.fxml");
         updateActiveMenuItem(event);
     }
     
     @FXML
     private void handleSalesManagement(javafx.scene.input.MouseEvent event) {
-        dashboardWelcomeLabel.setText("💰 Bán Hàng - POS");
+        welcomeLabel.setText("💰 Bán Hàng - POS");
         loadContent("/fxml/POS.fxml");
         updateActiveMenuItem(event);
     }
     
     @FXML
     private void handleReportManagement(javafx.scene.input.MouseEvent event) {
-        dashboardWelcomeLabel.setText("Báo cáo");
+        welcomeLabel.setText("Báo cáo");
         loadContent("/fxml/Report.fxml");
         updateActiveMenuItem(event);
     }
     @FXML
     private void handleUserManagement(javafx.scene.input.MouseEvent event) {
-        dashboardWelcomeLabel.setText("Quản lý người dùng");
+        welcomeLabel.setText("Quản lý người dùng");
         loadContent("/fxml/UserManagement.fxml");
         updateActiveMenuItem(event);
     }
     @FXML
     private void handleShiftManagement(javafx.scene.input.MouseEvent event) {
-        dashboardWelcomeLabel.setText("Quản lý ca làm");
+        welcomeLabel.setText("Quản lý ca làm");
         loadContent("/fxml/Shift.fxml");
         updateActiveMenuItem(event);
     }
     
     @FXML
     private void handleSettingsManagement(javafx.scene.input.MouseEvent event) {
-        dashboardWelcomeLabel.setText("Cài đặt hệ thống");
+        welcomeLabel.setText("Cài đặt hệ thống");
+        System.out.println("Settings Management clicked");
         updateActiveMenuItem(event);
     }
     
