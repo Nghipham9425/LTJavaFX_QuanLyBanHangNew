@@ -34,11 +34,11 @@ public class OrderController implements Initializable {
     @FXML private TableColumn<Order, String> colOrderStatus;
     @FXML private TableColumn<Order, String> colOrderTotal;
 
-    private OrderDAO orderDAO = new OrderDAO();
-    private OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
-    private ObservableList<Order> orderList = FXCollections.observableArrayList();
-    private DecimalFormat df = new DecimalFormat("#,##0");
-    private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private final OrderDAO orderDAO = new OrderDAO();
+    private final OrderDetailDAO orderDetailDAO = new OrderDetailDAO();
+    private final ObservableList<Order> orderList = FXCollections.observableArrayList();
+    private final DecimalFormat df = new DecimalFormat("#,##0");
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {

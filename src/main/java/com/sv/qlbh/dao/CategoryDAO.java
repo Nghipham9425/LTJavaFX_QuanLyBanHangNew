@@ -57,20 +57,7 @@ public class CategoryDAO {
         }
     }
     
-//    public boolean update1(Category cate)
-//    {
-//        String sql="UPDATE catagories set name = ?, description = ? WHERE id =?";
-//        try(Connection conn =DatabaseConnection.getConnection();
-//                PreparedStatement stmt = conn.prepareStatement(sql))
-//        {
-//            
-//        }
-//            
-//                
-//        {
-//            
-//        }
-//    }
+
     
     public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM categories WHERE id = ?";

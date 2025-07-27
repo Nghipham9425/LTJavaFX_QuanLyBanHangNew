@@ -109,6 +109,8 @@ public class ProductDAO {
         }
         return products;
     }
+
+
     
     public List<Product> getByCategory(int categoryId) throws SQLException {
         String sql = "SELECT * FROM products WHERE category_id = ? ORDER BY name";

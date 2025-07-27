@@ -16,6 +16,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.StringConverter;
 
+
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -63,6 +64,7 @@ public class POSController implements Initializable {
     private HostServices hostServices;
     private final DecimalFormat df = new DecimalFormat("#,##0.00");
 
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setupTableColumns();
@@ -73,6 +75,8 @@ public class POSController implements Initializable {
         setupEventHandlers();
         updateTotals();
     }
+
+
     
     public void setHostServices(HostServices hostServices) {
         this.hostServices = hostServices;
@@ -122,7 +126,7 @@ public class POSController implements Initializable {
             }
         });
         
-        // Make it look nice
+
         cmbCustomer.setPromptText("Chọn khách hàng...");
     }
     
@@ -180,7 +184,7 @@ public class POSController implements Initializable {
     
     private void loadProducts() {
         try {
-            List<Product> products = productDAO.getAll(); // Use existing method
+            List<Product> products = productDAO.getAll();
             productList.setAll(products);
         } catch (SQLException e) {
             AlertUtils.showError("Lỗi", "Không thể tải danh sách sản phẩm: " + e.getMessage());
@@ -191,14 +195,14 @@ public class POSController implements Initializable {
         try {
             List<Customer> allCustomers = customerDAO.getAll();
             
-            // Filter only active customers (status = true)
+
             List<Customer> activeCustomers = allCustomers.stream()
                     .filter(Customer::isStatus)
                     .collect(java.util.stream.Collectors.toList());
             
             // Add "Walk-in Customer" option
             Customer walkInCustomer = new Customer();
-            walkInCustomer.setId(-1); // Special ID for walk-in
+            walkInCustomer.setId(-1);
             walkInCustomer.setName("Khách vãng lai");
             walkInCustomer.setPhone("N/A");
             
@@ -251,7 +255,7 @@ public class POSController implements Initializable {
             return;
         }
         
-        // Check if product already in cart
+
         for (CartItem item : cartItems) {
             if (item.getProduct().getId() == product.getId()) {
                 if (item.getQuantity() < product.getStock()) {
@@ -317,7 +321,7 @@ public class POSController implements Initializable {
         // Validate customer status if a real customer is selected
         Customer selectedCustomer = cmbCustomer.getSelectionModel().getSelectedItem();
         if (selectedCustomer != null && selectedCustomer.getId() > 0) {
-            // Recheck customer status from database
+
             try {
                 Customer currentCustomer = customerDAO.getById(selectedCustomer.getId());
                 if (currentCustomer == null || !currentCustomer.isStatus()) {
@@ -394,7 +398,6 @@ public class POSController implements Initializable {
         Order order = new Order();
         
         Customer selectedCustomer = cmbCustomer.getSelectionModel().getSelectedItem();
-        // Only set customer ID if it's a real customer (not walk-in)
         if (selectedCustomer != null && selectedCustomer.getId() > 0) {
             order.setCustomerId(selectedCustomer.getId());
         }
@@ -410,8 +413,7 @@ public class POSController implements Initializable {
         order.setFinalAmount(subtotal - discount);
         order.setPaymentMethod(rbVNPay.isSelected() ? "VNPAY" : "CASH");
         order.setStatus("PROCESSING");
-        
-        // Set note based on customer type
+
         if (selectedCustomer != null && selectedCustomer.getId() == -1) {
             order.setNote("POS Order - Khách vãng lai");
         } else if (selectedCustomer != null) {
@@ -429,6 +431,7 @@ public class POSController implements Initializable {
         try {
             String paymentUrl = VNPayService.createPaymentUrl(order, "127.0.0.1");
             
+            // Chỉ dùng hostServices - đơn giản nhất
             if (hostServices != null) {
                 hostServices.showDocument(paymentUrl);
                 AlertUtils.showInfo("🏦 VNPay - Chờ thanh toán", 
@@ -439,7 +442,7 @@ public class POSController implements Initializable {
                          "Trạng thái đơn hàng sẽ được cập nhật tự động.");
                 clearCart();
             } else {
-                AlertUtils.showError("Lỗi", "Không thể mở trình duyệt để thanh toán VNPay");
+                AlertUtils.showInfo("VNPay URL", "Vui lòng copy URL này và mở thủ công:\n\n" + paymentUrl);
             }
             
         } catch (RuntimeException e) {

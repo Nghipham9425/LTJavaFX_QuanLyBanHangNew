@@ -21,8 +21,9 @@ public class VNPayConfig {
     
     // VNPay Sandbox Configuration
     public static final String VNP_PAY_URL = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static final String VNP_TMN_CODE = "SDQ9JWEK";
-    public static final String SECRET_KEY = "ADEM3LCZ9EXKBW35Z23UMZLYLEV9B1VG";
+    // Your VNPay credentials (từ email VNPay)
+    public static final String VNP_TMN_CODE = "SDQ9JWEK"; // Your real credentials
+    public static final String SECRET_KEY = "ADEM3LCZ9EXKBW35Z23UMZLYLEV9B1VG"; // Your real credentials
     public static final String VNP_API_URL = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
     
     /**
@@ -34,7 +35,7 @@ public class VNPayConfig {
         if (port > 0) {
             return "http://localhost:" + port + "/vnpay-return";
         }
-        return "http://localhost:8090/vnpay-return"; 
+        return "http://localhost:8090/vnpay-return"; // fallback
     }
     
     // VNPay Version and Command

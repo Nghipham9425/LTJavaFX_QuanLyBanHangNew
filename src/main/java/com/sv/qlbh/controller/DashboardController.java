@@ -32,6 +32,7 @@ public class DashboardController implements Initializable {
     private ProductDAO productDAO;
     private CustomerDAO customerDAO;
     private OrderDAO orderDAO;
+    private javafx.application.HostServices hostServices;
     
 
     
@@ -45,12 +46,35 @@ public class DashboardController implements Initializable {
         if (currentUser != null) {
             String roleName = getRoleName(currentUser.getRole());
             welcomeLabel.setText("Chào mừng " + roleName + " " + currentUser.getFullName());
-        } else {
+
+            disableMenuByRole(currentUser.getRole());        } 
+            else {
             welcomeLabel.setText("Chào mừng đến với hệ thống bán hàng");
-        }
+            }
         
         loadHomeContent();
         System.out.println("Dashboard loaded successfully!");
+    }
+    
+    public void setHostServices(javafx.application.HostServices hostServices) {
+        this.hostServices = hostServices;
+    }
+    
+
+
+    private void disableMenuByRole(String role) {
+        switch (role) {
+            case "ADMIN":
+                break;
+                
+            case "STAFF": 
+                break;
+                
+            case "ACCOUNTANT":
+                break;             
+            case "WAREHOUSE":
+                break;
+        }
     }
     
     private void loadHomeContent() {
@@ -111,30 +135,7 @@ public class DashboardController implements Initializable {
         card.getChildren().addAll(labelNode, valueNode);
         return card;
     }
-    
-    private javafx.scene.layout.VBox createInfoCard(String title, String content, double width, double height) {
-        javafx.scene.layout.VBox card = new javafx.scene.layout.VBox(12);
-        card.setAlignment(javafx.geometry.Pos.TOP_LEFT);
-        card.setPrefSize(width, height);
-        card.getStyleClass().add("block-card");
-        
-        javafx.scene.control.Label titleNode = new javafx.scene.control.Label(title);
-        titleNode.getStyleClass().add("block-title");
-        
-        card.getChildren().add(titleNode);
-        
-        if (!content.isEmpty()) {
-            String[] lines = content.split("\n");
-            for (String line : lines) {
-                javafx.scene.control.Label contentNode = new javafx.scene.control.Label(line);
-                contentNode.getStyleClass().add("block-text");
-                card.getChildren().add(contentNode);
-            }
-        }
-        
-        return card;
-    }
-    
+
     private javafx.scene.control.Button createQuickButton(String text) {
         javafx.scene.control.Button button = new javafx.scene.control.Button(text);
         button.getStyleClass().add("quick-tool-btn");
@@ -208,7 +209,12 @@ public class DashboardController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Node content = loader.load();
             
-
+            if (fxmlPath.equals("/fxml/POS.fxml")) {
+                com.sv.qlbh.controller.POSController posController = loader.getController();
+                if (posController != null && hostServices != null) {
+                    posController.setHostServices(hostServices);
+                }
+            }
             
             contentArea.getChildren().clear();
             contentArea.getChildren().add(content);
@@ -257,6 +263,13 @@ public class DashboardController implements Initializable {
     
     @FXML
     private void handleProductManagement(javafx.scene.input.MouseEvent event) {
+        User currentUser = SessionManager.getCurrentUser();
+        // Chỉ ADMIN và STAFF mới được quản lý sản phẩm
+        if ("ACCOUNTANT".equals(currentUser.getRole()) || "WAREHOUSE".equals(currentUser.getRole())) {
+            showAccessDeniedAlert();
+            return;
+        }
+        
         welcomeLabel.setText("Quản lý sản phẩm và danh mục");
         loadContent("/fxml/ProductCategory.fxml");
         updateActiveMenuItem(event);
@@ -264,6 +277,13 @@ public class DashboardController implements Initializable {
     
     @FXML
     private void handleCustomerManagement(javafx.scene.input.MouseEvent event) {
+        User currentUser = SessionManager.getCurrentUser();
+        // Chỉ ADMIN và STAFF mới được quản lý khách hàng
+        if ("ACCOUNTANT".equals(currentUser.getRole()) || "WAREHOUSE".equals(currentUser.getRole())) {
+            showAccessDeniedAlert();
+            return;
+        }
+        
         welcomeLabel.setText("Quản lý khách hàng");
         loadContent("/fxml/Customer.fxml");
         updateActiveMenuItem(event);
@@ -271,6 +291,13 @@ public class DashboardController implements Initializable {
     
     @FXML
     private void handleSupplierManagement(javafx.scene.input.MouseEvent event) {
+        User currentUser = SessionManager.getCurrentUser();
+        // Chỉ ADMIN và WAREHOUSE mới được quản lý nhà cung cấp
+        if ("STAFF".equals(currentUser.getRole()) || "ACCOUNTANT".equals(currentUser.getRole())) {
+            showAccessDeniedAlert();
+            return;
+        }
+        
         welcomeLabel.setText("Quản lý nhà cung cấp");
         loadContent("/fxml/Supplier.fxml");
         updateActiveMenuItem(event);
@@ -278,6 +305,13 @@ public class DashboardController implements Initializable {
 
     @FXML
     private void handleOrderManagement(javafx.scene.input.MouseEvent event) {
+        User currentUser = SessionManager.getCurrentUser();
+        // Chỉ ADMIN và STAFF mới được quản lý đơn hàng
+        if ("ACCOUNTANT".equals(currentUser.getRole()) || "WAREHOUSE".equals(currentUser.getRole())) {
+            showAccessDeniedAlert();
+            return;
+        }
+        
         welcomeLabel.setText("Quản lý đơn hàng");
         loadContent("/fxml/Order.fxml");
         updateActiveMenuItem(event);
@@ -285,6 +319,13 @@ public class DashboardController implements Initializable {
     
     @FXML
     private void handleInventoryManagement(javafx.scene.input.MouseEvent event) {
+        User currentUser = SessionManager.getCurrentUser();
+        // Chỉ ADMIN và WAREHOUSE mới được quản lý kho
+        if ("STAFF".equals(currentUser.getRole()) || "ACCOUNTANT".equals(currentUser.getRole())) {
+            showAccessDeniedAlert();
+            return;
+        }
+        
         welcomeLabel.setText("Quản lý kho");
         loadContent("/fxml/Inventory.fxml");
         updateActiveMenuItem(event);
@@ -292,6 +333,13 @@ public class DashboardController implements Initializable {
     
     @FXML
     private void handleSalesManagement(javafx.scene.input.MouseEvent event) {
+        User currentUser = SessionManager.getCurrentUser();
+        // Chỉ ADMIN và STAFF mới được bán hàng
+        if ("ACCOUNTANT".equals(currentUser.getRole()) || "WAREHOUSE".equals(currentUser.getRole())) {
+            showAccessDeniedAlert();
+            return;
+        }
+        
         welcomeLabel.setText("💰 Bán Hàng - POS");
         loadContent("/fxml/POS.fxml");
         updateActiveMenuItem(event);
@@ -299,18 +347,39 @@ public class DashboardController implements Initializable {
     
     @FXML
     private void handleReportManagement(javafx.scene.input.MouseEvent event) {
+        User currentUser = SessionManager.getCurrentUser();
+        // Chỉ ADMIN và ACCOUNTANT mới được xem báo cáo
+        if ("STAFF".equals(currentUser.getRole()) || "WAREHOUSE".equals(currentUser.getRole())) {
+            showAccessDeniedAlert();
+            return;
+        }
+        
         welcomeLabel.setText("Báo cáo");
         loadContent("/fxml/Report.fxml");
         updateActiveMenuItem(event);
     }
     @FXML
     private void handleUserManagement(javafx.scene.input.MouseEvent event) {
+        User currentUser = SessionManager.getCurrentUser();
+
+        if (!"ADMIN".equals(currentUser.getRole())) {
+            showAccessDeniedAlert();
+            return;
+        }
+        
         welcomeLabel.setText("Quản lý người dùng");
         loadContent("/fxml/UserManagement.fxml");
         updateActiveMenuItem(event);
     }
     @FXML
     private void handleShiftManagement(javafx.scene.input.MouseEvent event) {
+        User currentUser = SessionManager.getCurrentUser();
+
+        if (!"ADMIN".equals(currentUser.getRole())) {
+            showAccessDeniedAlert();
+            return;
+        }
+        
         welcomeLabel.setText("Quản lý ca làm");
         loadContent("/fxml/Shift.fxml");
         updateActiveMenuItem(event);
@@ -358,5 +427,14 @@ public class DashboardController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+
+    private void showAccessDeniedAlert() {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+        alert.setTitle("Từ chối truy cập");
+        alert.setHeaderText("Bạn không có quyền truy cập chức năng này!");
+        alert.setContentText("Vui lòng liên hệ quản trị viên để được cấp quyền.");
+        alert.showAndWait();
     }
 }
