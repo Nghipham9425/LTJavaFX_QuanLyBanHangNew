@@ -393,6 +393,10 @@ public class DashboardController implements Initializable {
     }
     
     private void updateActiveMenuItem(javafx.scene.input.MouseEvent event) {
+        if (event == null) {
+            return; // Skip updating active menu item if no event provided
+        }
+        
         Node sidebar = ((Node) event.getSource()).getParent().getParent();
         sidebar.lookupAll(".menu-item").forEach(node -> {
             node.getStyleClass().remove("active");

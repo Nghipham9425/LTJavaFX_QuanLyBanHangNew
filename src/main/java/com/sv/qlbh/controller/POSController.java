@@ -231,10 +231,7 @@ public class POSController implements Initializable {
         }
     }
     
-    @FXML
-    private void handleSearch() {
-        searchProducts(txtProductSearch.getText());
-    }
+
     
     @FXML
     private void handleRefresh() {
@@ -431,7 +428,6 @@ public class POSController implements Initializable {
         try {
             String paymentUrl = VNPayService.createPaymentUrl(order, "127.0.0.1");
             
-            // Chỉ dùng hostServices - đơn giản nhất
             if (hostServices != null) {
                 hostServices.showDocument(paymentUrl);
                 AlertUtils.showInfo("🏦 VNPay - Chờ thanh toán", 
